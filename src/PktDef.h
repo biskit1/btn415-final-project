@@ -1,5 +1,18 @@
 #pragma once
 
+
+//constant integer definitions
+const int FORWARD = 1;
+const int BACKWARD = 2;
+const int RIGHT = 3;
+const int LEFT = 4;
+const int UP = 5;
+const int DOWN = 6;
+const int OPEN = 7;
+const int CLOSE = 8;
+const int HEADERSIZE = 6;
+
+
 class PktDef {
 	struct Header {
 		unsigned int PktCount;
@@ -12,17 +25,6 @@ class PktDef {
 		unsigned char Padding : 2;
 		unsigned char Length;
 	};
-
-	//constant integer definitions
-	const int FORWARD = 1;
-	const int BACKWARD = 2;
-	const int RIGHT = 3;
-	const int LEFT = 4;
-	const int UP = 5;
-	const int DOWN = 6;
-	const int OPEN = 7;
-	const int CLOSE = 8;
-	const int HEADERSIZE = 6;
 
 	struct Packet {
 		Header Header;
