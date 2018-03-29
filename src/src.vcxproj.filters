@@ -18,6 +18,9 @@
     <ClCompile Include="Milestone01.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PktDef.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PktDef.h">

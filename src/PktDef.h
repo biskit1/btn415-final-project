@@ -31,6 +31,9 @@ class PktDef {
 		char* Data;
 		char CRC;
 	};
+	PktDef(char *);
+	char* GenPacket();
+	void SetBodyData(char *, int);
 
 	char * RawBuffer;
 

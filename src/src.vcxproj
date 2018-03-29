@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Milestone01.cpp" />
+    <ClCompile Include="PktDef.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PktDef.h" />
