@@ -1,5 +1,12 @@
-#include "PktDef.h"
 #include <cstring>
+
+#include "PktDef.h"
+
+PktDef::PktDef() {
+	CmdPacket.Header = {};
+	CmdPacket.Data = nullptr;
+	CmdPacket.CRC = 0;
+}
 
 PktDef::PktDef(char * buffer) {
 

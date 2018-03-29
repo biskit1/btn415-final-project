@@ -31,11 +31,14 @@ class PktDef {
 		char* Data;
 		char CRC;
 	};
-	PktDef(char *);
-	char* GenPacket();
-	void SetBodyData(char *, int);
 
 	char * RawBuffer;
 
 	Packet CmdPacket;
+
+public:
+	PktDef();
+	PktDef(char *);
+	char* GenPacket();
+	void SetBodyData(char *, int);
 };
