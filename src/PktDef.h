@@ -1,6 +1,5 @@
 #pragma once
 
-
 //constant integer definitions
 const int FORWARD = 1;
 const int BACKWARD = 2;
@@ -31,9 +30,7 @@ class PktDef {
 		char* Data;
 		char CRC;
 	};
-
 	char * RawBuffer;
-
 	Packet CmdPacket;
 
 public:
@@ -41,4 +38,5 @@ public:
 	PktDef(char *);
 	char* GenPacket();
 	void SetBodyData(char *, int);
+	void SetPktCount(int);
 };

@@ -1,6 +1,6 @@
+#include "PktDef.h"
 #include <cstring>
 
-#include "PktDef.h"
 
 PktDef::PktDef() {
 	CmdPacket.Header = {};
@@ -60,4 +60,9 @@ void PktDef::SetBodyData(char * data, int size)
 {
 	CmdPacket.Data = new char[size];
 	memcpy(&CmdPacket.Data, &data[0], size);
+}
+
+void PktDef::SetPktCount(int count)
+{
+	CmdPacket.Header.PktCount = count;
 }
