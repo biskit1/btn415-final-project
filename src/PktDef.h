@@ -1,6 +1,10 @@
 
 #pragma once
 
+struct ActuatorBody {
+	int Action;
+};
+
 //constant integer definitions
 const int FORWARD = 1;
 const int BACKWARD = 2;
@@ -19,7 +23,6 @@ struct MotorBody {
 	int Direction;
 	unsigned int Duration; 
 };
-
 
 class PktDef {
 	struct Header {
@@ -43,7 +46,7 @@ class PktDef {
 	char * RawBuffer;
 	int countFlags();
 	Packet CmdPacket;
-
+  
 public:
 	PktDef();
 	PktDef(char *);
