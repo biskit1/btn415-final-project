@@ -61,7 +61,7 @@ void PktDef::SetBodyData(char * data, int size)
 	memcpy(&CmdPacket.Data, &data[0], size);
 }
 
-PktDef::CmdType PktDef::GetCmd()
+CmdType PktDef::GetCmd()
 {
 	CmdType ret = UNKNOWN;
 	int numbits = countFlags();
