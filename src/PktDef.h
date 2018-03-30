@@ -1,3 +1,4 @@
+
 #pragma once
 
 //constant integer definitions
@@ -12,6 +13,13 @@ const int CLOSE = 8;
 const int HEADERSIZE = 6;
 
 enum CmdType { DRIVE, SLEEP, ARM, CLAW, ACK, NACK, UNKNOWN };
+
+
+struct MotorBody {
+	int Direction;
+	unsigned int Duration; 
+};
+
 
 class PktDef {
 	struct Header {
