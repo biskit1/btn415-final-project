@@ -55,4 +55,5 @@ public:
 	char *GetBodyData();
 	int GetPktCount();
 	void SetPktCount(int);
+	void SetCmd(const CmdType&);
 };

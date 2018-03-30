@@ -128,3 +128,34 @@ void PktDef::SetPktCount(int count)
 {
 	CmdPacket.Header.PktCount = count;
 }
+
+//A set function that sets the packets command flag based on the CmdType
+void PktDef::SetCmd(const CmdType& cmd)
+{
+  switch (cmd){
+    case DRIVE:
+      // set pkt cmd flag
+      CmdPacket.Header.Drive = 1;
+      break;
+    case SLEEP:
+      // set pkt cmd flag
+      CmdPacket.Header.Sleep = 1;
+      break;
+    case ARM:
+      // set pkt cmd flag
+      CmdPacket.Header.Arm = 1;
+      break;
+    case CLAW:
+      // set pkt cmd flag
+      CmdPacket.Header.Claw = 1;
+      break;
+    case ACK:
+      // set pkt cmd flag
+      CmdPacket.Header.Ack = 1;
+      break;
+    case NACK:
+      // set pkt cmd flag
+      CmdPacket.Header.Ack = 0;
+      break;
+  }
+}
