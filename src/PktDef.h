@@ -11,6 +11,7 @@ const int OPEN = 7;
 const int CLOSE = 8;
 const int HEADERSIZE = 6;
 
+enum CmdType { DRIVE, SLEEP, ARM, CLAW, ACK, NACK, UNKNOWN };
 
 class PktDef {
 	struct Header {
@@ -30,7 +31,9 @@ class PktDef {
 		char* Data;
 		char CRC;
 	};
+
 	char * RawBuffer;
+	int countFlags();
 	Packet CmdPacket;
 
 public:
@@ -38,5 +41,10 @@ public:
 	PktDef(char *);
 	char* GenPacket();
 	void SetBodyData(char *, int);
+	CmdType GetCmd();
+	bool GetAck();
+	int GetLength();
+	char *GetBodyData();
+	int GetPktCount();
 	void SetPktCount(int);
 };

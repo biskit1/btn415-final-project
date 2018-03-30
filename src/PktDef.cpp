@@ -1,7 +1,6 @@
 #include "PktDef.h"
 #include <cstring>
 
-
 PktDef::PktDef() {
 	CmdPacket.Header = {};
 	CmdPacket.Data = nullptr;
@@ -60,6 +59,69 @@ void PktDef::SetBodyData(char * data, int size)
 {
 	CmdPacket.Data = new char[size];
 	memcpy(&CmdPacket.Data, &data[0], size);
+}
+
+PktDef::CmdType PktDef::GetCmd()
+{
+	CmdType ret = UNKNOWN;
+	int numbits = countFlags();
+	//Checking Bits to determine the active type
+	if(numbits == 1){
+		if (CmdPacket.Header.Drive == 1) {
+			ret = DRIVE;
+		}
+		else if (CmdPacket.Header.Sleep == 1) {
+			ret = SLEEP;
+		}
+		else if (CmdPacket.Header.Arm == 1) {
+			ret = ARM;
+		}
+		else if (CmdPacket.Header.Claw == 1) {
+			ret = CLAW;
+		}
+	}
+	//if the ACK flag is on as well as another flag, it is an ACK
+	else if(numbits == 2 && GetAck()){
+		ret = ACK;
+	}
+
+	return ret;
+}
+
+bool PktDef::GetAck()
+{
+	return CmdPacket.Header.Ack;
+}
+
+int PktDef::GetLength()
+{
+	return CmdPacket.Header.Length;
+}
+
+char * PktDef::GetBodyData()
+{
+	return CmdPacket.Data;
+}
+
+int PktDef::GetPktCount()
+{
+	return CmdPacket.Header.PktCount;
+}
+
+int PktDef::countFlags()
+{
+	int count = 0;
+	if(CmdPacket.Header.Drive == 1)
+		count++;
+	if(CmdPacket.Header.Sleep == 1)
+		count++;
+	if(CmdPacket.Header.Arm == 1)
+		count++;
+	if(CmdPacket.Header.Claw == 1)
+		count++;
+	if(GetAck())
+		count++;
+	return count;
 }
 
 void PktDef::SetPktCount(int count)
