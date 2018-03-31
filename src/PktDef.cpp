@@ -13,11 +13,11 @@ PktDef::PktDef(char * buffer) {
 
 	//setup for bitshifting from 4th byte assuming stored in LSB
 	char * ptr = &buffer[4];
-	CmdPacket.Header.Sleep = *ptr & 1;
+	CmdPacket.Header.Drive = *ptr & 1;
 	CmdPacket.Header.Status = (*ptr >> 1) & 1;
-	CmdPacket.Header.Drive = (*ptr >> 2) & 1;
-	CmdPacket.Header.Claw = (*ptr >> 3) & 1;
-	CmdPacket.Header.Arm = (*ptr >> 4) & 1;
+	CmdPacket.Header.Sleep = (*ptr >> 2) & 1;
+	CmdPacket.Header.Arm = (*ptr >> 3) & 1;
+	CmdPacket.Header.Claw = (*ptr >> 4) & 1;
 	CmdPacket.Header.Ack = (*ptr >> 5) & 1;
 
 	//set padding to 0
