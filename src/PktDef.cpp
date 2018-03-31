@@ -31,12 +31,9 @@ PktDef::PktDef(char * buffer) {
 
 char * PktDef::GenPacket()
 {
-	
-	//+ 1 for charcacter
-	int size = HEADERSIZE + CmdPacket.Header.Length + sizeof(Packet::CRC);
 
 	//creating a buffer to hold exactly the packet
-	RawBuffer = new char[size];
+	RawBuffer = new char[CmdPacket.Header.Length];
 
 	//memcpy from the beginning
 	memcpy(&RawBuffer[0], &CmdPacket.Header.PktCount, sizeof(Packet::Header.PktCount));
@@ -47,10 +44,7 @@ char * PktDef::GenPacket()
 	memcpy(&RawBuffer[4], ptr, sizeof(char));
 	memcpy(&RawBuffer[5], &CmdPacket.Header.Length, sizeof(Packet::Header.Length));
 	memcpy(&RawBuffer[6], &CmdPacket.Data, CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
-
-	//calculating the next place in the array to get data from
-	int next = HEADERSIZE + CmdPacket.Header.Length;
-	memcpy(&RawBuffer[next], &this->CmdPacket.CRC, sizeof(Packet::CRC));
+	memcpy(&RawBuffer[CmdPacket.Header.Length - sizeof(Packet::CRC)], &this->CmdPacket.CRC, sizeof(Packet::CRC));
 
 	return RawBuffer;
 }
@@ -59,6 +53,7 @@ void PktDef::SetBodyData(char * data, int size)
 {
 	CmdPacket.Data = new char[size];
 	memcpy(&CmdPacket.Data, &data[0], size);
+	CmdPacket.Header.Length = HEADERSIZE + size + sizeof(Packet::CRC);
 }
 
 CmdType PktDef::GetCmd()
