@@ -111,16 +111,15 @@ int PktDef::GetPktCount()
 int PktDef::countFlags()
 {
 	int count = 0;
-	if(CmdPacket.Header.Drive == 1)
-		count++;
-	if(CmdPacket.Header.Sleep == 1)
-		count++;
-	if(CmdPacket.Header.Arm == 1)
-		count++;
-	if(CmdPacket.Header.Claw == 1)
-		count++;
-	if(GetAck())
-		count++;
+	
+	unsigned char* headerFlags = (unsigned char*)&CmdPacket.Header.PktCount + sizeof(CmdPacket.Header.PktCount);
+
+	for (int i = 0; i < 6; i++) {
+		if ((*headerFlags >> i) & 1 == 1) {
+			count += 1;
+		}
+	}
+
 	return count;
 }
 
