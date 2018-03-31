@@ -2,7 +2,7 @@
 #pragma once
 
 struct ActuatorBody {
-	int Action;
+	char Action;
 };
 
 //constant integer definitions
@@ -20,8 +20,8 @@ enum CmdType { DRIVE, SLEEP, ARM, CLAW, ACK, NACK, UNKNOWN };
 
 
 struct MotorBody {
-	int Direction;
-	unsigned int Duration; 
+	char Direction;
+	char Duration; 
 };
 
 class PktDef {

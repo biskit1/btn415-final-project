@@ -52,7 +52,7 @@ char * PktDef::GenPacket()
 void PktDef::SetBodyData(char * data, int size)
 {
 	CmdPacket.Data = new char[size];
-	memcpy(&CmdPacket.Data, &data[0], size);
+	memcpy(CmdPacket.Data, data, size);
 	CmdPacket.Header.Length = HEADERSIZE + size + sizeof(Packet::CRC);
 }
 
