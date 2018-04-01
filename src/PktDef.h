@@ -16,7 +16,7 @@ const int OPEN = 7;
 const int CLOSE = 8;
 const int HEADERSIZE = 6;
 
-enum CmdType { DRIVE, STATUS, SLEEP, ARM, CLAW, ACK, NACK, UNKNOWN };
+enum CmdType { DRIVE = 1, STATUS, SLEEP, ARM, CLAW, ACK, NACK, UNKNOWN };
 
 
 struct MotorBody {
