@@ -1,11 +1,5 @@
-
 #pragma once
 
-struct ActuatorBody {
-	char Action;
-};
-
-//constant integer definitions
 const int FORWARD = 1;
 const int BACKWARD = 2;
 const int RIGHT = 3;
@@ -16,12 +10,15 @@ const int OPEN = 7;
 const int CLOSE = 8;
 const int HEADERSIZE = 6;
 
-enum CmdType { DRIVE = 1, STATUS, SLEEP, ARM, CLAW, ACK, NACK, UNKNOWN };
-
+enum CmdType { DRIVE = 1, STATUS, SLEEP, ARM, CLAW, ACK, UNKNOWN };
 
 struct MotorBody {
 	char Direction;
 	char Duration; 
+};
+
+struct ActuatorBody {
+	char Action;
 };
 
 class PktDef {
@@ -45,23 +42,24 @@ class PktDef {
 
 	enum CmdFlag { ALL };
 
-	char * RawBuffer;
+	char* RawBuffer;
+	Packet CmdPacket;
+
 	int countFlags();
 	void clearFlag(const CmdFlag&);
-	Packet CmdPacket;
   
 public:
 	PktDef();
-	PktDef(char *);
+	PktDef(char*);
 	char* GenPacket();
-	void SetBodyData(char *, int);
+	void SetBodyData(char*, int);
 	CmdType GetCmd();
 	bool GetAck();
 	int GetLength();
-	char *GetBodyData();
+	char* GetBodyData();
 	int GetPktCount();
 	void SetPktCount(int);
 	void SetCmd(const CmdType&);
-	bool CheckCRC(char *, int);
+	bool CheckCRC(char*, int);
 	void CalcCRC();
 };
