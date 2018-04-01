@@ -175,3 +175,45 @@ void PktDef::SetCmd(const CmdType& cmd)
 		break;
 	}
 }
+
+//a function that calculates the CRC and sets the objects packet CRC parameter.
+void PktDef::CalcCRC() {
+	char len = GetLength();
+	int pktCount = GetPktCount();
+	int sizeBody = len - HEADERSIZE - sizeof(Packet::CRC);
+	int bufferSize = sizeof(pktCount) + sizeof(char) + sizeof(len) + sizeBody;
+	char* bodyPtr = GetBodyData();
+
+	int count = 0;
+
+	char *myBuffer = new char[bufferSize];
+	memcpy(&myBuffer[0], &pktCount, sizeof(pktCount));
+	char* ptr = (char*)&CmdPacket + sizeof(CmdPacket.Header.PktCount);
+	memcpy(&myBuffer[4], ptr, sizeof(char));
+	memcpy(&myBuffer[5], &len, sizeof(len));
+	memcpy(&myBuffer[6], bodyPtr, sizeBody);
+	
+	for (int i = 0; i < bufferSize; i++) {
+		for (int j = 0; j < 8; j++) {
+			count += (myBuffer[i] >> j) & 1;
+		}
+	}
+
+	CmdPacket.CRC = count;
+}
+
+// /a function that takes a pointer to a RAW data buffer, the size of the packet in bytes located in the buffer, 
+//and calculates the CRC. If the calculated CRC matches the CRC of the packet in the buffer the function returns TRUE, 
+//otherwise FALSE.
+bool PktDef::CheckCRC(char * rawBuffer, int numBytes) {
+	int testCrc = numBytes - sizeof(CmdPacket.CRC);
+	bool match = false;
+	int count = 0;
+	for (int i = 0; i < testCrc; i++) {
+		for (int j = 0; j < 8; j++) {
+			count += (rawBuffer[i] >> j) & 1;
+		}
+	}
+	match = count == rawBuffer[testCrc] ? true : false;
+	return match;
+}

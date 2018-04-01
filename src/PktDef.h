@@ -62,4 +62,6 @@ public:
 	int GetPktCount();
 	void SetPktCount(int);
 	void SetCmd(const CmdType&);
+	bool CheckCRC(char *, int);
+	void CalcCRC();
 };
