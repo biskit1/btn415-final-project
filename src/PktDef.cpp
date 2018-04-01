@@ -65,6 +65,9 @@ CmdType PktDef::GetCmd()
 		if (CmdPacket.Header.Drive == 1) {
 			ret = DRIVE;
 		}
+		else if (CmdPacket.Header.Status == 1){
+			ret = STATUS;
+		}
 		else if (CmdPacket.Header.Sleep == 1) {
 			ret = SLEEP;
 		}
@@ -130,6 +133,9 @@ void PktDef::SetCmd(const CmdType& cmd)
     case DRIVE:
       // set pkt cmd flag
       CmdPacket.Header.Drive = 1;
+      break;
+    case STATUS:
+      CmdPacket.Header.Status = 1;
       break;
     case SLEEP:
       // set pkt cmd flag
