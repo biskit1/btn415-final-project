@@ -43,8 +43,8 @@ char * PktDef::GenPacket()
 
 	memcpy(&RawBuffer[4], ptr, sizeof(char));
 	memcpy(&RawBuffer[5], &CmdPacket.Header.Length, sizeof(Packet::Header.Length));
-	memcpy(&RawBuffer[6], &CmdPacket.Data, CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
-	memcpy(&RawBuffer[CmdPacket.Header.Length - sizeof(Packet::CRC)], &this->CmdPacket.CRC, sizeof(Packet::CRC));
+	memcpy(&RawBuffer[6], CmdPacket.Data, CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
+	memcpy(&RawBuffer[CmdPacket.Header.Length - sizeof(Packet::CRC)], &CmdPacket.CRC, sizeof(Packet::CRC));
 
 	return RawBuffer;
 }
