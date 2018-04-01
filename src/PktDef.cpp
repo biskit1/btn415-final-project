@@ -121,6 +121,17 @@ int PktDef::countFlags()
 	return count;
 }
 
+void PktDef::clearFlag(const CmdFlag& flag) {
+	unsigned char* headerFlags = (unsigned char*)&CmdPacket.Header.PktCount + sizeof(CmdPacket.Header.PktCount);
+	unsigned char ackValue = CmdPacket.Header.Ack;
+
+	memset(headerFlags, 0, 1);
+
+	if (flag != ALL) {
+		CmdPacket.Header.Ack = ackValue;
+	}
+}
+
 void PktDef::SetPktCount(int count)
 {
 	CmdPacket.Header.PktCount = count;
@@ -129,33 +140,38 @@ void PktDef::SetPktCount(int count)
 //A set function that sets the packets command flag based on the CmdType
 void PktDef::SetCmd(const CmdType& cmd)
 {
-  switch (cmd){
-    case DRIVE:
-      // set pkt cmd flag
-      CmdPacket.Header.Drive = 1;
-      break;
-    case STATUS:
-      CmdPacket.Header.Status = 1;
-      break;
-    case SLEEP:
-      // set pkt cmd flag
-      CmdPacket.Header.Sleep = 1;
-      break;
-    case ARM:
-      // set pkt cmd flag
-      CmdPacket.Header.Arm = 1;
-      break;
-    case CLAW:
-      // set pkt cmd flag
-      CmdPacket.Header.Claw = 1;
-      break;
-    case ACK:
-      // set pkt cmd flag
-      CmdPacket.Header.Ack = 1;
-      break;
-    case NACK:
-      // set pkt cmd flag
-      CmdPacket.Header.Ack = 0;
-      break;
-  }
+
+	if (cmd != ACK) {
+		clearFlag(ALL);
+	}
+	
+	switch (cmd) {
+	case DRIVE:
+		// set pkt cmd flag
+		CmdPacket.Header.Drive = 1;
+		break;
+	case STATUS:
+		CmdPacket.Header.Status = 1;
+		break;
+	case SLEEP:
+		// set pkt cmd flag
+		CmdPacket.Header.Sleep = 1;
+		break;
+	case ARM:
+		// set pkt cmd flag
+		CmdPacket.Header.Arm = 1;
+		break;
+	case CLAW:
+		// set pkt cmd flag
+		CmdPacket.Header.Claw = 1;
+		break;
+	case ACK:
+		// set pkt cmd flag
+		CmdPacket.Header.Ack = 1;
+		break;
+	case NACK:
+		// set pkt cmd flag
+		CmdPacket.Header.Ack = 0;
+		break;
+	}
 }

@@ -43,8 +43,11 @@ class PktDef {
 		char CRC;
 	};
 
+	enum CmdFlag { ALL };
+
 	char * RawBuffer;
 	int countFlags();
+	void clearFlag(const CmdFlag&);
 	Packet CmdPacket;
   
 public:
