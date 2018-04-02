@@ -40,10 +40,7 @@ char* PktDef::GenPacket()
 	// memcpy from the beginning
 	memcpy(&RawBuffer[0], &CmdPacket.Header.PktCount, sizeof(Packet::Header.PktCount));
 
-	// Make a pointer to the start of the flags
-	char* ptr = (char*) &CmdPacket.Header.PktCount + sizeof(Packet::Header.PktCount);
-
-	memcpy(&RawBuffer[4], ptr, sizeof(char));
+	memcpy(&RawBuffer[4], GetFlagData(), sizeof(char));
 	memcpy(&RawBuffer[5], &CmdPacket.Header.Length, sizeof(Packet::Header.Length));
 	memcpy(&RawBuffer[6], CmdPacket.Data, CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
 	memcpy(&RawBuffer[CmdPacket.Header.Length - sizeof(Packet::CRC)], &CmdPacket.CRC, sizeof(Packet::CRC));
@@ -108,10 +105,15 @@ int PktDef::GetPktCount()
 	return CmdPacket.Header.PktCount;
 }
 
+char* PktDef::GetFlagData() const
+{
+	return (char*)&CmdPacket.Header.PktCount + sizeof(Packet::Header.PktCount);
+}
+
 int PktDef::countFlags()
 {
 	int count = 0;
-	unsigned char* headerFlags = (unsigned char*)&CmdPacket.Header.PktCount + sizeof(CmdPacket.Header.PktCount);
+	char* headerFlags = GetFlagData();
 
 	for (int i = 0; i < 6; i++) {
 		if ((*headerFlags >> i) & 1 == 1) {
@@ -123,7 +125,7 @@ int PktDef::countFlags()
 }
 
 void PktDef::clearFlag(const CmdFlag& flag) {
-	unsigned char* headerFlags = (unsigned char*)&CmdPacket.Header.PktCount + sizeof(CmdPacket.Header.PktCount);
+	char* headerFlags = GetFlagData();
 	unsigned char ackValue = CmdPacket.Header.Ack;
 
 	memset(headerFlags, 0, 1);

@@ -47,6 +47,7 @@ class PktDef {
 
 	int countFlags();
 	void clearFlag(const CmdFlag&);
+	char* GetFlagData() const;
   
 public:
 	PktDef();
