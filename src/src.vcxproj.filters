@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Milestone01.cpp">
+    <ClCompile Include="PktDef.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PktDef.cpp">
+    <ClCompile Include="Milestone02.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
