@@ -33,7 +33,7 @@ int main()
 		<< internal
 		<< setfill('0');
 
-	char result[9] = { 0x01, 0000, 0000, 0000, 0x01, 0x09, 0x01, 0x14, 0x07 };
+	char result[9] = { 0x01, 0000, 0000, 0000, 0x04, 0x09, 0x01, 0x14, 0x07 };
 	bool bPass = true;
 	for (int x = 0; x < (int)TestPkt.GetLength(); x++)
 	{
@@ -53,7 +53,7 @@ int main()
 	TestPkt.CalcCRC();
 	ptr = TestPkt.GenPacket();
 
-	char result2[9] = { 0x02, 0000, 0000, 0000, 0x21, 0x09, 0x01, 0x14, 0x08 };
+	char result2[9] = { 0x02, 0000, 0000, 0000, 0x24, 0x09, 0x01, 0x14, 0x08 };
 	bPass = true;
 	for (int x = 0; x < (int)TestPkt.GetLength(); x++)
 	{
@@ -75,7 +75,7 @@ int main()
 	TestPkt.CalcCRC();
 	ptr = TestPkt.GenPacket();
 
-	char result3[8] = { 0x03, 0000, 0000, 0000, 0x08, 0x08, 0x05, 0x06 };
+	char result3[8] = { 0x03, 0000, 0000, 0000, 0x10, 0x08, 0x05, 0x06 };
 	bPass = true;
 	for (int x = 0; x < (int)TestPkt.GetLength(); x++)
 	{
@@ -97,7 +97,7 @@ int main()
 	TestPkt.CalcCRC();
 	ptr = TestPkt.GenPacket();
 
-	char result4[8] = { 0x04, 0000, 0000, 0000, 0x10, 0x08, 0x07, 0x06 };
+	char result4[8] = { 0x04, 0000, 0000, 0000, 0x08, 0x08, 0x07, 0x06 };
 	bPass = true;
 	for (int x = 0; x < (int)TestPkt.GetLength(); x++)
 	{
@@ -117,7 +117,7 @@ int main()
 	//Testing the PktDef creation interface based on an RxBuffer of RAW Data
 	char buffer[9] = { 0x01, 0000, 0000, 0000, 0x01, 0x09, 0x01, 0x14, 0x07 };
 	PktDef RxPkt(buffer);
-	if(RxPkt.GetCmd() == 1)
+	if(RxPkt.GetCmd() == SLEEP)
 		ofs << "CommandID:  " << RxPkt.GetCmd() << " -- PASSED" << endl;
 	else
 		ofs << "CommandID:  " << RxPkt.GetCmd() << " -- FAILED" << endl;
