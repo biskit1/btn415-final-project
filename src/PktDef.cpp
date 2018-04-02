@@ -2,15 +2,22 @@
 
 #include "PktDef.h"
 
-PktDef::PktDef()
+void PktDef::init()
 {
 	CmdPacket.Header = {};
 	CmdPacket.Data = nullptr;
 	CmdPacket.CRC = 0;
+	RawBuffer = nullptr;
 }
 
-PktDef::PktDef(char * buffer)
-{
+PktDef::PktDef() {
+	init();
+}
+
+
+PktDef::PktDef(char* buffer) {
+	init();
+
 	memcpy(&CmdPacket.Header.PktCount, &buffer[0], sizeof(Packet::Header.PktCount));
 
 	// Setup for bitshifting from 4th byte assuming stored in LSB
@@ -32,8 +39,18 @@ PktDef::PktDef(char * buffer)
 	memcpy(&CmdPacket.CRC, &buffer[CmdPacket.Header.Length - sizeof(Packet::CRC)], sizeof(Packet::CRC));
 }
 
+PktDef::~PktDef() {
+	delete[] CmdPacket.Data;
+	CmdPacket.Data = nullptr;
+
+	delete[] RawBuffer;
+	RawBuffer = nullptr;
+}
+
 char* PktDef::GenPacket()
 {
+	delete[] RawBuffer;
+
 	// Create a buffer to hold exactly the packet
 	RawBuffer = new char[CmdPacket.Header.Length];
 
@@ -50,6 +67,8 @@ char* PktDef::GenPacket()
 
 void PktDef::SetBodyData(char* data, int size)
 {
+	delete[] CmdPacket.Data;
+
 	CmdPacket.Data = new char[size];
 	memcpy(CmdPacket.Data, data, size);
 	CmdPacket.Header.Length = static_cast<unsigned char>(HEADERSIZE + size + sizeof(Packet::CRC));
@@ -195,6 +214,8 @@ void PktDef::CalcCRC() {
 	}
 
 	CmdPacket.CRC = count;
+
+	delete[] myBuffer;
 }
 
 // A function that takes a pointer to a RAW data buffer, the size of the packet in bytes located in the buffer, 

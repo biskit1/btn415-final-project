@@ -45,6 +45,7 @@ class PktDef {
 	char* RawBuffer;
 	Packet CmdPacket;
 
+	void init();
 	int countFlags();
 	void clearFlag(const CmdFlag&);
 	char* GetFlagData() const;
@@ -52,6 +53,7 @@ class PktDef {
 public:
 	PktDef();
 	PktDef(char*);
+	~PktDef();
 	char* GenPacket();
 	void SetBodyData(char*, int);
 	CmdType GetCmd();
