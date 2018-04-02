@@ -52,7 +52,7 @@ void PktDef::SetBodyData(char* data, int size)
 {
 	CmdPacket.Data = new char[size];
 	memcpy(CmdPacket.Data, data, size);
-	CmdPacket.Header.Length = HEADERSIZE + size + sizeof(Packet::CRC);
+	CmdPacket.Header.Length = static_cast<unsigned char>(HEADERSIZE + size + sizeof(Packet::CRC));
 }
 
 CmdType PktDef::GetCmd()
@@ -116,7 +116,7 @@ int PktDef::countFlags()
 	char* headerFlags = GetFlagData();
 
 	for (int i = 0; i < 6; i++) {
-		if ((*headerFlags >> i) & 1 == 1) {
+		if (((*headerFlags >> i) & 1) == 1) {
 			count += 1;
 		}
 	}
