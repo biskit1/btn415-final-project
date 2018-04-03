@@ -10,7 +10,7 @@ const int OPEN = 7;
 const int CLOSE = 8;
 const int HEADERSIZE = 6;
 
-enum CmdType { DRIVE = 1, STATUS, SLEEP, ARM, CLAW, ACK, UNKNOWN };
+enum CmdType { SLEEP, STATUS, DRIVE, CLAW, ARM, ACK, UNKNOWN };
 
 struct MotorBody {
 	char Direction;
@@ -24,11 +24,11 @@ struct ActuatorBody {
 class PktDef {
 	struct Header {
 		unsigned int PktCount;
-		unsigned char Drive : 1;
-		unsigned char Status : 1;
 		unsigned char Sleep : 1;
-		unsigned char Arm : 1;
+		unsigned char Status : 1;
+		unsigned char Drive : 1;
 		unsigned char Claw : 1;
+		unsigned char Arm : 1;
 		unsigned char Ack : 1;
 		unsigned char Padding : 2;
 		unsigned char Length;
