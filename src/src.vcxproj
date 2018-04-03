@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Milestone02.cpp" />
+    <ClCompile Include="Milestone01.cpp" />
     <ClCompile Include="PktDef.cpp" />
   </ItemGroup>
   <ItemGroup>
