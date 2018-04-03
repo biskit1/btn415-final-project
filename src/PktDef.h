@@ -46,7 +46,6 @@ class PktDef {
 	Packet CmdPacket;
 
 	void init();
-	int countFlags();
 	void clearFlag(const CmdFlag&);
 	char* GetFlagData() const;
   
