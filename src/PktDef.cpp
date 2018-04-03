@@ -77,10 +77,8 @@ void PktDef::SetBodyData(char* data, int size)
 CmdType PktDef::GetCmd()
 {
 	CmdType ret = UNKNOWN;
-	int numbits = countFlags();
 
 	// Check bits to determine the active type
-	if (numbits == 1) {
 		if (CmdPacket.Header.Drive == 1) {
 			ret = DRIVE;
 		}
@@ -96,10 +94,6 @@ CmdType PktDef::GetCmd()
 		else if (CmdPacket.Header.Claw == 1) {
 			ret = CLAW;
 		}
-	} else if (numbits == 2 && GetAck()) {
-		// If the ACK flag is on as well as another flag, it is an ACK
-		ret = ACK;
-	}
 
 	return ret;
 }
@@ -127,20 +121,6 @@ int PktDef::GetPktCount()
 char* PktDef::GetFlagData() const
 {
 	return (char*)&CmdPacket.Header.PktCount + sizeof(Packet::Header.PktCount);
-}
-
-int PktDef::countFlags()
-{
-	int count = 0;
-	char* headerFlags = GetFlagData();
-
-	for (int i = 0; i < 6; i++) {
-		if (((*headerFlags >> i) & 1) == 1) {
-			count += 1;
-		}
-	}
-
-	return count;
 }
 
 void PktDef::clearFlag(const CmdFlag& flag) {
