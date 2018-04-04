@@ -79,21 +79,21 @@ CmdType PktDef::GetCmd()
 	CmdType ret = UNKNOWN;
 
 	// Check bits to determine the active type
-		if (CmdPacket.Header.Drive == 1) {
-			ret = DRIVE;
-		}
-		else if (CmdPacket.Header.Status == 1) {
-			ret = STATUS;
-		}
-		else if (CmdPacket.Header.Sleep == 1) {
-			ret = SLEEP;
-		}
-		else if (CmdPacket.Header.Arm == 1) {
-			ret = ARM;
-		}
-		else if (CmdPacket.Header.Claw == 1) {
-			ret = CLAW;
-		}
+	if (CmdPacket.Header.Drive == 1) {
+		ret = DRIVE;
+	}
+	else if (CmdPacket.Header.Status == 1) {
+		ret = STATUS;
+	}
+	else if (CmdPacket.Header.Sleep == 1) {
+		ret = SLEEP;
+	}
+	else if (CmdPacket.Header.Arm == 1) {
+		ret = ARM;
+	}
+	else if (CmdPacket.Header.Claw == 1) {
+		ret = CLAW;
+	}
 
 	return ret;
 }
@@ -186,7 +186,7 @@ void PktDef::CalcCRC() {
 
 	memcpy(&myBuffer[5], &len, sizeof(len));
 	memcpy(&myBuffer[6], bodyPtr, sizeBody);
-	
+
 	for (int i = 0; i < bufferSize; i++) {
 		for (int j = 0; j < 8; j++) {
 			count += (myBuffer[i] >> j) & 1;
