@@ -7,7 +7,7 @@
 
 enum SocketType {CLIENT, SERVER};
 enum ConnectionType {TCP, UDP};
-//should be as big as the biggest possible thing we can receieve.
+//should be as big as the biggest possible thing we can receive.
 const int DEFAULT_SIZE = 255;
 
 class MySocket {
