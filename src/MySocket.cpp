@@ -51,18 +51,27 @@ bool MySocket::SetIPAddr(std::string ip)
 
 MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, ConnectionType CType, unsigned int size)
 {
-	bool checkStart = StartWSA();
-	if (checkStart) {
+	if (StartWSA()) {
 		mySocket = SType;
 		connectionType = CType;
 		IPAddr = IP;
 		Port = port;
-		if (size != 0)
+		if (size != 0) {
 			MaxSize = size;
-		else
+		}
+		else {
 			MaxSize = DEFAULT_SIZE;
-		//Note that the constructor should put servers in conditions to either accept connections (if TCP), or to receive messages(if UDP).
-		//unsure of what it means, assuming it is calling the setup based on MS2.cpp
+		}
+		Buffer = new char[MaxSize];
+		ConnectionSocket = INVALID_SOCKET;
+		WelcomeSocket = INVALID_SOCKET;
+
+		SvrAddr.sin_family = AF_INET;
+		SvrAddr.sin_port = htons(Port);
+		SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str());
+
+		RespAddr = { 0 };
+
 		if (connectionType == UDP) {
 			SetupUDP();
 		}
@@ -81,9 +90,7 @@ bool MySocket::StartWSA()
 {
 	WSADATA wsa_data;
 	bool ret = true;
-	//run WSAStartup, if it is not 0 (fails) set the return to false
 	if ((WSAStartup(MAKEWORD(2, 2), &wsa_data)) != 0) {
-		//Print("Could not start DLLs");
 		ret = false;
 	}
 	return ret;
