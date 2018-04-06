@@ -34,9 +34,6 @@ bool MySocket::SetPortNum(int port)
 		Port = port;
 		ret = true;
 	}
-	else {
-		//error message?
-	}
 	return ret;
 }
 
@@ -83,7 +80,6 @@ bool MySocket::StartWSA()
 	WSADATA wsa_data;
 	bool ret = true;
 	//run WSAStartup, if it is not 0 (fails) set the return to false
-	//potential enhancement for later: check if WSA has already been startede
 	if ((WSAStartup(MAKEWORD(2, 2), &wsa_data)) != 0) {
 		//Print("Could not start DLLs");
 		ret = false;
