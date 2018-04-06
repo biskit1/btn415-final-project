@@ -72,12 +72,14 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 
 		RespAddr = { 0 };
 
-		if (connectionType == UDP) {
+		switch (connectionType) {
+		case UDP:
 			SetupUDP();
-		}
-		else if (connectionType == TCP) {
+			break;
+		
+		case TCP:
 			ConnectTCP();
-		}
+			break;
 	}
 }
 
