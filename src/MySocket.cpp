@@ -51,22 +51,24 @@ bool MySocket::SetIPAddr(std::string ip)
 
 MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, ConnectionType CType, unsigned int size)
 {
-	StartWSA();
-	mySocket = SType;
-	connectionType = CType;
-	IPAddr = IP;
-	Port = port;
-	if (size != 0)
-		MaxSize = size;
-	else
-		MaxSize = DEFAULT_SIZE;
-	//Note that the constructor should put servers in conditions to either accept connections (if TCP), or to receive messages(if UDP).
-	//unsure of what it means, assuming it is calling the setup based on MS2.cpp
-	if (connectionType == UDP) {
-		SetupUDP();
-	}
-	else if (connectionType == TCP) {
-		ConnectTCP();
+	bool checkStart = StartWSA();
+	if (checkStart) {
+		mySocket = SType;
+		connectionType = CType;
+		IPAddr = IP;
+		Port = port;
+		if (size != 0)
+			MaxSize = size;
+		else
+			MaxSize = DEFAULT_SIZE;
+		//Note that the constructor should put servers in conditions to either accept connections (if TCP), or to receive messages(if UDP).
+		//unsure of what it means, assuming it is calling the setup based on MS2.cpp
+		if (connectionType == UDP) {
+			SetupUDP();
+		}
+		else if (connectionType == TCP) {
+			ConnectTCP();
+		}
 	}
 }
 
