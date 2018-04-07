@@ -87,12 +87,13 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 		IPAddr = "";
 		connectionType = NONE;
 		Port = 0;
-		size = 0;
+		MaxSize = 0;
 		ConnectionSocket = INVALID_SOCKET;
 		WelcomeSocket = INVALID_SOCKET;
 		SvrAddr = { 0 };
 		RespAddr = { 0 };
 		Buffer = nullptr;
+		bConnect = false;
 	}
 }
 
