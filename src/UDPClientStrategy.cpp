@@ -30,11 +30,12 @@ bool UDPClientStrategy::SetupUDP()
 
 bool UDPClientStrategy::TerminateUDP()
 {
-	if (UDPSocket == INVALID_SOCKET) {
-		return false;
+	if (UDPSocket != INVALID_SOCKET && closesocket(UDPSocket) == 0) {
+		UDPSocket = INVALID_SOCKET;
+		return true;
 	}
 	else {
-		return closesocket(UDPSocket) == 0;
+		return false;
 	}
 }
 
