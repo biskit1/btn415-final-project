@@ -82,6 +82,18 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 			break;
 		}
 	}
+	else {
+		mySocket = INVALID;
+		IPAddr = "";
+		connectionType = NONE;
+		Port = 0;
+		size = 0;
+		ConnectionSocket = INVALID_SOCKET;
+		WelcomeSocket = INVALID_SOCKET;
+		SvrAddr = { 0 };
+		RespAddr = { 0 };
+		Buffer = nullptr;
+	}
 }
 
 MySocket::~MySocket()

@@ -5,8 +5,8 @@
 
 #include<iostream>
 
-enum SocketType {CLIENT, SERVER};
-enum ConnectionType {TCP, UDP};
+enum SocketType {CLIENT, SERVER, INVALID};
+enum ConnectionType {TCP, UDP, INVALID};
 const int DEFAULT_SIZE = 7;
 
 class MySocket {
