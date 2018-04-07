@@ -12,6 +12,7 @@ private:
 	int& RespAddrSize;
 public:
 	UDPServerStrategy(SOCKET&, sockaddr_in&, sockaddr_in&, int&);
+	bool Setup();
 	bool ConnectTCP();
 	bool DisconnectTCP();
 	bool SetupUDP();

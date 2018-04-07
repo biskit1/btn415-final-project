@@ -1,4 +1,6 @@
 #include "MySocket.h"
+#include "UDPClientStrategy.h"
+#include "UDPServerStrategy.h"
 
 std::string MySocket::GetIPAddr()
 {
@@ -61,6 +63,7 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 	bConnect = false;
 
 	if (StartWSA()) {
+		commStrategy = nullptr;
 		mySocket = SType;
 		connectionType = CType;
 		if (size != 0) {
@@ -73,20 +76,28 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 		SetPortNum(port);
 		SetIPAddr(IP);
 
-		SvrAddr.sin_port = htons(Port);
-		SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str());
-
 		switch (connectionType) {
 		case UDP:
-			SetupUDP();
+			switch (mySocket) {
+			case CLIENT:
+				commStrategy = new UDPClientStrategy(ConnectionSocket, SvrAddr, RespAddr, RespAddrSize);
+				break;
+			case SERVER:
+				commStrategy = new UDPServerStrategy(WelcomeSocket, SvrAddr, RespAddr, RespAddrSize);
+				break;
+			}
 			break;
-
 		case TCP:
 			ConnectTCP();
 			break;
 		}
+
+		if (commStrategy) {
+			bConnect = commStrategy->Setup();
+		}
 	}
 	else {
+		commStrategy = nullptr;
 		mySocket = INVALID;
 		connectionType = NONE;
 		IPAddr = "";
@@ -109,6 +120,10 @@ bool MySocket::StartWSA()
 		ret = false;
 	}
 	return ret;
+}
+
+bool MySocket::WSAStarted() {
+	return mySocket != INVALID && connectionType != NONE;
 }
 
 bool MySocket::ConnectTCP()
@@ -224,19 +239,40 @@ bool MySocket::CloseTCPSocket(SOCKET& socket) {
 
 bool MySocket::SetupUDP()
 {
-	//dummy for setupUDP, TBD Later
-	return false;
+	switch (connectionType) {
+	case TCP:
+		return false;
+		break;
+	case UDP:
+		if (!bConnect && WSAStarted()) {
+			bConnect = commStrategy->SetupUDP();
+		}
+		return bConnect;
+		break;
+	}
 }
 
 bool MySocket::TerminateUDP()
 {
-	//dummy for TerminateUDP, TBD Later
-	return false;
+	switch (connectionType) {
+	case TCP:
+		return false;
+		break;
+	case UDP:
+		if (bConnect && WSAStarted() && commStrategy->TerminateUDP()) {
+			bConnect = false;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 
 int MySocket::SendData(const char * data, int numBytes)
 {
 	int bytesSent = 0;
+
 	if (bConnect) {
 		switch (connectionType) {
 		case TCP:
@@ -248,8 +284,11 @@ int MySocket::SendData(const char * data, int numBytes)
 				bytesSent = send(ConnectionSocket, data, numBytes, 0);
 				break;
 			}
+			break;
 		case UDP:
-			bytesSent = -1;
+			if (WSAStarted()) {
+				bytesSent = commStrategy->SendData(data, numBytes);
+			}			
 			break;
 		}
 	}
@@ -266,22 +305,22 @@ int MySocket::GetData(char * data)
 			switch (mySocket) {
 			case CLIENT:
 				bytesWritten = recv(ConnectionSocket, Buffer, MaxSize, 0);
-				if (bytesWritten > 0) {
-					memcpy(data, Buffer, bytesWritten);
-				}
 				break;
 			case SERVER:
 				bytesWritten = recv(ConnectionSocket, Buffer, MaxSize, 0);
-				if (bytesWritten > 0) {
-					memcpy(data, Buffer, bytesWritten);
-				}
 				break;
 			}
 			break;
 		case UDP:
-			bytesWritten = -1;
+			if (WSAStarted()) {
+				bytesWritten = commStrategy->GetData(Buffer, MaxSize);
+			}
 			break;
 		}
+	}
+
+	if (bytesWritten > 0) {
+		memcpy(data, Buffer, bytesWritten);
 	}
 
 	return bytesWritten;

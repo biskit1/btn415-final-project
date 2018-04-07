@@ -5,11 +5,14 @@
 
 #include<iostream>
 
+#include "iStrategy.h"
+
 enum SocketType {CLIENT, SERVER, INVALID};
 enum ConnectionType {TCP, UDP, NONE};
 const int DEFAULT_SIZE = 7;
 
 class MySocket {
+	iStrategy* commStrategy;
 	char * Buffer;
 	SOCKET WelcomeSocket;
 	SOCKET ConnectionSocket;
@@ -27,6 +30,7 @@ public:
 	MySocket(SocketType, std::string, unsigned int, ConnectionType, unsigned int);
 	~MySocket();
 	bool StartWSA();
+	bool WSAStarted();
 	bool ConnectTCP();
 	bool DisconnectTCP();
 	bool SetupUDP();

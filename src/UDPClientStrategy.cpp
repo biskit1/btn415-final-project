@@ -7,6 +7,11 @@ UDPClientStrategy::UDPClientStrategy(SOCKET& sock, sockaddr_in& SvrAddr, sockadd
 	RespAddrSize(RespAddrSize)
 {}
 
+bool UDPClientStrategy::Setup()
+{
+	return SetupUDP();
+}
+
 bool UDPClientStrategy::ConnectTCP()
 {
 	return false;

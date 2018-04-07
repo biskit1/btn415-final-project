@@ -2,6 +2,7 @@
 
 class iStrategy {
 public:
+	virtual bool Setup() = 0;
 	virtual bool ConnectTCP() = 0;
 	virtual bool DisconnectTCP() = 0;
 	virtual bool SetupUDP() = 0;
