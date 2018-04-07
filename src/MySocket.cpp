@@ -57,6 +57,7 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 	ConnectionSocket = INVALID_SOCKET;
 	MaxSize = DEFAULT_SIZE;
 	RespAddr = { 0 };
+	RespAddrSize = sizeof(RespAddr);
 	bConnect = false;
 
 	if (StartWSA()) {
@@ -74,10 +75,6 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 
 		SvrAddr.sin_port = htons(Port);
 		SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str());
-
-		RespAddr = { 0 };
-		RespAddrSize = sizeof(RespAddr);
-		bConnect = false;
 
 		switch (connectionType) {
 		case UDP:

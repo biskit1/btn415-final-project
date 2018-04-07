@@ -142,10 +142,15 @@
     <ClCompile Include="Milestone02.cpp" />
     <ClCompile Include="MySocket.cpp" />
     <ClCompile Include="PktDef.cpp" />
+    <ClCompile Include="UDPClientStrategy.cpp" />
+    <ClCompile Include="UDPServerStrategy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MySocket.h" />
+    <ClInclude Include="iStrategy.h" />
     <ClInclude Include="PktDef.h" />
+    <ClInclude Include="UDPClientStrategy.h" />
+    <ClInclude Include="UDPServerStrategy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
