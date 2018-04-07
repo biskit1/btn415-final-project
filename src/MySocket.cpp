@@ -23,7 +23,7 @@ bool MySocket::setType(SocketType st){
 		mySocket = st;
 		ret = true;
 	}
-	return false;
+	return ret;
 }
 
 bool MySocket::SetPortNum(int port)
@@ -76,10 +76,11 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 		case UDP:
 			SetupUDP();
 			break;
-		
+
 		case TCP:
 			ConnectTCP();
 			break;
+		}
 	}
 }
 
