@@ -2,6 +2,7 @@
 #include <fstream>
 #include <thread>
 #include <future>
+#include <string>
 
 #include "MySocket.h"
 
