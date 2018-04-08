@@ -15,7 +15,7 @@ SocketType MySocket::GetType()
 	return mySocket;
 }
 
-bool MySocket::setType(SocketType st){
+bool MySocket::SetType(SocketType st){
 
 	bool ret = false;
 	//check if things have already been initalized

@@ -37,5 +37,5 @@ public:
 	bool SetPortNum(int);
 	int GetPort();
 	SocketType GetType();
-	bool setType(SocketType);
+	bool SetType(SocketType);
 };
