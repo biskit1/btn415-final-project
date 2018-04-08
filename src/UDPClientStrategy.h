@@ -6,7 +6,7 @@
 
 class UDPClientStrategy : public iStrategy {
 private:
-	SOCKET& UDPSocket;
+	SOCKET& sock;
 	sockaddr_in& SvrAddr;
 	sockaddr_in& RespAddr;
 	int& RespAddrSize;

@@ -1,7 +1,7 @@
 #include "UDPServerStrategy.h"
 
 UDPServerStrategy::UDPServerStrategy(SOCKET& sock, sockaddr_in& SvrAddr, sockaddr_in& RespAddr, int& RespAddrSize)
-	: UDPSocket(sock),
+	: sock(sock),
 	SvrAddr(SvrAddr),
 	RespAddr(RespAddr),
 	RespAddrSize(RespAddrSize)
@@ -24,13 +24,13 @@ bool UDPServerStrategy::DisconnectTCP()
 
 bool UDPServerStrategy::SetupUDP()
 {
-	UDPSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (UDPSocket != INVALID_SOCKET) {
-		if ((bind(UDPSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr))) != SOCKET_ERROR) {
+	sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (sock != INVALID_SOCKET) {
+		if ((bind(sock, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr))) != SOCKET_ERROR) {
 			return true;
 		}
 		else {
-			closesocket(UDPSocket);
+			closesocket(sock);
 		}
 	}
 	return false;
@@ -38,8 +38,8 @@ bool UDPServerStrategy::SetupUDP()
 
 bool UDPServerStrategy::TerminateUDP()
 {
-	if (UDPSocket != INVALID_SOCKET && closesocket(UDPSocket) == 0) {
-		UDPSocket = INVALID_SOCKET;
+	if (sock != INVALID_SOCKET && closesocket(sock) == 0) {
+		sock = INVALID_SOCKET;
 		return true;
 	}
 	else {
@@ -49,10 +49,10 @@ bool UDPServerStrategy::TerminateUDP()
 
 int UDPServerStrategy::SendData(const char* data, int len)
 {
-	return sendto(UDPSocket, data, len, 0, (struct sockaddr*)&RespAddr, sizeof(RespAddr));
+	return sendto(sock, data, len, 0, (struct sockaddr*)&RespAddr, sizeof(RespAddr));
 }
 
 int UDPServerStrategy::GetData(char* buff, int len)
 {
-	return recvfrom(UDPSocket, buff, len, 0, (struct sockaddr*)&RespAddr, &RespAddrSize);
+	return recvfrom(sock, buff, len, 0, (struct sockaddr*)&RespAddr, &RespAddrSize);
 }
