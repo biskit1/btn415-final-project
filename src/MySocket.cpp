@@ -110,6 +110,7 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 MySocket::~MySocket()
 {
 	delete[] Buffer;
+	delete commStrategy;
 }
 
 bool MySocket::StartWSA()
