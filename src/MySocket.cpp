@@ -116,41 +116,6 @@ bool MySocket::StartWSA()
 
 bool MySocket::ConnectTCP()
 {
-	//			case SERVER:
-	//				WelcomeSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	//				if (WelcomeSocket == INVALID_SOCKET) {
-	//					DisconnectTCP();
-	//					ret = false;
-	//				}
-	//				else {
-	//					bConnect = true;
-	//					if (bind(WelcomeSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr)) == SOCKET_ERROR) {
-	//						DisconnectTCP();
-	//						ret = false;
-	//						bConnect = false;
-	//					}
-	//					else {
-	//						if (listen(WelcomeSocket, 1) == SOCKET_ERROR) {
-	//							DisconnectTCP();
-	//							ret = false;
-	//							bConnect = false;
-	//						}
-	//						else {
-	//							if ((ConnectionSocket = accept(WelcomeSocket, NULL, NULL)) == SOCKET_ERROR) {
-	//								DisconnectTCP();
-	//								ret = false;
-	//								bConnect = false;
-	//							}
-	//							ret = true; //not needed
-	//						}
-	//					}
-	//				}
-	//				break;
-	//			}
-	//		}
-	//	}
-	//	return ret;
-
 	switch (connectionType) {
 	case TCP:
 		if (bConnect) {
@@ -221,20 +186,7 @@ bool MySocket::ConnectTCP()
 }
 
 bool MySocket::DisconnectTCP()
-{/*
-	int ret = -1;
-	if (bConnect) {
-		if (ConnectionSocket != INVALID_SOCKET) {
-			ret = closesocket(ConnectionSocket);
-		}
-		if (mySocket == SERVER) {
-			ret = closesocket(WelcomeSocket);
-		}
-	}
-	WSACleanup();
-	std::cout << ret;
-	return ret == 0 ? true : false;*/
-	bool good = false;
+{
 	switch (connectionType) {
 	case TCP:
 		if (bConnect) {
@@ -243,9 +195,7 @@ bool MySocket::DisconnectTCP()
 				return CloseTCPSocket(ConnectionSocket);
 				break;
 			case SERVER:
-				good = CloseTCPSocket(ConnectionSocket);
-				good = CloseTCPSocket(WelcomeSocket);
-				return good;
+				return CloseTCPSocket(ConnectionSocket) && CloseTCPSocket(WelcomeSocket);
 				break;
 			default:
 				return false;
@@ -306,14 +256,7 @@ int MySocket::SendData(const char * data, int numBytes)
 				break;
 			}
 		case UDP:
-			switch (mySocket) {
-			case CLIENT:
-				bytesSent = sendto(ConnectionSocket, data, numBytes, 0, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
-				break;
-			case SERVER:
-				bytesSent = sendto(WelcomeSocket, data, numBytes, 0, (struct sockaddr*)&RespAddr, sizeof(RespAddr));
-				break;
-			}
+			return -1;
 		}
 	}
 
@@ -342,21 +285,7 @@ int MySocket::GetData(char * data)
 			}
 			break;
 		case UDP:
-			switch (mySocket) {
-			case CLIENT:
-				bytesWritten = recvfrom(ConnectionSocket, Buffer, MaxSize, 0, (struct sockaddr*)&RespAddr, &RespAddrSize);
-				if (bytesWritten > 0) {
-					memcpy(data, Buffer, bytesWritten);
-				}
-				break;
-			case SERVER:
-				bytesWritten = recvfrom(WelcomeSocket, Buffer, MaxSize, 0, (struct sockaddr*)&RespAddr, &RespAddrSize);
-				if (bytesWritten > 0) {
-					memcpy(data, Buffer, bytesWritten);
-				}
-				break;
-			}
-			break;
+			return -1;
 		}
 	}
 
