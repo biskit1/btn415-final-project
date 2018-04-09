@@ -111,6 +111,7 @@ MySocket::~MySocket()
 {
 	delete[] Buffer;
 	delete commStrategy;
+	WSACleanup();
 }
 
 bool MySocket::StartWSA()
