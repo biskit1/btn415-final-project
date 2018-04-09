@@ -77,6 +77,7 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 
 		RespAddr = { 0 };
 		RespAddrSize = sizeof(RespAddr);
+		bConnect = false;
 
 		switch (connectionType) {
 		case UDP:
@@ -339,6 +340,7 @@ int MySocket::GetData(char * data)
 				}
 				break;
 			}
+			break;
 		case UDP:
 			switch (mySocket) {
 			case CLIENT:
@@ -354,6 +356,7 @@ int MySocket::GetData(char * data)
 				}
 				break;
 			}
+			break;
 		}
 	}
 
