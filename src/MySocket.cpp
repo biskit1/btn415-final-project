@@ -51,6 +51,12 @@ bool MySocket::SetIPAddr(std::string ip)
 
 MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, ConnectionType CType, unsigned int size)
 {
+	WelcomeSocket = INVALID_SOCKET;
+	ConnectionSocket = INVALID_SOCKET;
+	MaxSize = DEFAULT_SIZE;
+	RespAddr = { 0 };
+	bConnect = false;
+
 	if (StartWSA()) {
 		mySocket = SType;
 		connectionType = CType;
@@ -59,18 +65,11 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 		if (size != 0) {
 			MaxSize = size;
 		}
-		else {
-			MaxSize = DEFAULT_SIZE;
-		}
 		Buffer = new char[MaxSize];
-		ConnectionSocket = INVALID_SOCKET;
-		WelcomeSocket = INVALID_SOCKET;
-
+		
 		SvrAddr.sin_family = AF_INET;
 		SvrAddr.sin_port = htons(Port);
 		SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str());
-
-		RespAddr = { 0 };
 
 		switch (connectionType) {
 		case UDP:
@@ -84,16 +83,11 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 	}
 	else {
 		mySocket = INVALID;
-		IPAddr = "";
 		connectionType = NONE;
+		IPAddr = "";
 		Port = 0;
-		MaxSize = 0;
-		ConnectionSocket = INVALID_SOCKET;
-		WelcomeSocket = INVALID_SOCKET;
 		SvrAddr = { 0 };
-		RespAddr = { 0 };
 		Buffer = nullptr;
-		bConnect = false;
 	}
 }
 
