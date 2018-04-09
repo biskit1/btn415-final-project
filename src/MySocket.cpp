@@ -256,7 +256,8 @@ int MySocket::SendData(const char * data, int numBytes)
 				break;
 			}
 		case UDP:
-			return -1;
+			bytesSent = -1;
+			break;
 		}
 	}
 
@@ -285,7 +286,8 @@ int MySocket::GetData(char * data)
 			}
 			break;
 		case UDP:
-			return -1;
+			bytesWritten = -1;
+			break;
 		}
 	}
 
