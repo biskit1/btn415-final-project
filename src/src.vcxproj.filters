@@ -24,12 +24,27 @@
     <ClCompile Include="MySocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UDPClientStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPServerStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PktDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MySocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UDPClientStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UDPServerStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
