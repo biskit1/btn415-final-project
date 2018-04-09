@@ -15,6 +15,7 @@ class MySocket {
 	SOCKET ConnectionSocket;
 	struct sockaddr_in SvrAddr;
 	struct sockaddr_in RespAddr;
+	int RespAddrSize;
 	SocketType mySocket;
 	std::string IPAddr;
 	int Port;
@@ -35,6 +36,7 @@ public:
 	std::string GetIPAddr();
 	bool SetIPAddr(std::string);
 	bool SetPortNum(int);
+	bool CloseTCPSocket(SOCKET& socket);
 	int GetPort();
 	SocketType GetType();
 	bool SetType(SocketType);
