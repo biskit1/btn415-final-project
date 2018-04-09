@@ -32,6 +32,7 @@ bool MySocket::SetPortNum(int port)
 	//check if things have already been initialized
 	if (bConnect == false) {
 		Port = port;
+		SvrAddr.sin_port = htons(Port);
 		ret = true;
 	}
 	return ret;
@@ -44,6 +45,7 @@ bool MySocket::SetIPAddr(std::string ip)
 	//check if things have already been initialized
 	if (bConnect == false) {
 		IPAddr = ip;
+		SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str);
 		ret = true;
 	}
 	return ret;
@@ -60,16 +62,14 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 	if (StartWSA()) {
 		mySocket = SType;
 		connectionType = CType;
-		IPAddr = IP;
-		Port = port;
 		if (size != 0) {
 			MaxSize = size;
 		}
 		Buffer = new char[MaxSize];
 		
 		SvrAddr.sin_family = AF_INET;
-		SvrAddr.sin_port = htons(Port);
-		SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str());
+		SetPortNum(port);
+		SetIPAddr(IP);
 
 		switch (connectionType) {
 		case UDP:
