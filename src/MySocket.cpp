@@ -116,40 +116,40 @@ bool MySocket::StartWSA()
 
 bool MySocket::ConnectTCP()
 {
-//			case SERVER:
-//				WelcomeSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-//				if (WelcomeSocket == INVALID_SOCKET) {
-//					DisconnectTCP();
-//					ret = false;
-//				}
-//				else {
-//					bConnect = true;
-//					if (bind(WelcomeSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr)) == SOCKET_ERROR) {
-//						DisconnectTCP();
-//						ret = false;
-//						bConnect = false;
-//					}
-//					else {
-//						if (listen(WelcomeSocket, 1) == SOCKET_ERROR) {
-//							DisconnectTCP();
-//							ret = false;
-//							bConnect = false;
-//						}
-//						else {
-//							if ((ConnectionSocket = accept(WelcomeSocket, NULL, NULL)) == SOCKET_ERROR) {
-//								DisconnectTCP();
-//								ret = false;
-//								bConnect = false;
-//							}
-//							ret = true; //not needed
-//						}
-//					}
-//				}
-//				break;
-//			}
-//		}
-//	}
-//	return ret;
+	//			case SERVER:
+	//				WelcomeSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	//				if (WelcomeSocket == INVALID_SOCKET) {
+	//					DisconnectTCP();
+	//					ret = false;
+	//				}
+	//				else {
+	//					bConnect = true;
+	//					if (bind(WelcomeSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr)) == SOCKET_ERROR) {
+	//						DisconnectTCP();
+	//						ret = false;
+	//						bConnect = false;
+	//					}
+	//					else {
+	//						if (listen(WelcomeSocket, 1) == SOCKET_ERROR) {
+	//							DisconnectTCP();
+	//							ret = false;
+	//							bConnect = false;
+	//						}
+	//						else {
+	//							if ((ConnectionSocket = accept(WelcomeSocket, NULL, NULL)) == SOCKET_ERROR) {
+	//								DisconnectTCP();
+	//								ret = false;
+	//								bConnect = false;
+	//							}
+	//							ret = true; //not needed
+	//						}
+	//					}
+	//				}
+	//				break;
+	//			}
+	//		}
+	//	}
+	//	return ret;
 
 	switch (connectionType) {
 	case TCP:
@@ -195,7 +195,7 @@ bool MySocket::ConnectTCP()
 							bConnect = false;
 							return bConnect;
 						}
-						else{
+						else {
 							if ((ConnectionSocket = accept(WelcomeSocket, NULL, NULL)) == SOCKET_ERROR) {
 								closesocket(WelcomeSocket);
 								bConnect = false;
@@ -232,7 +232,7 @@ bool MySocket::DisconnectTCP()
 		}
 	}
 	WSACleanup();
-	std::cout << ret; 
+	std::cout << ret;
 	return ret == 0 ? true : false;*/
 	bool good = false;
 	switch (connectionType) {
@@ -245,7 +245,7 @@ bool MySocket::DisconnectTCP()
 			case SERVER:
 				good = CloseTCPSocket(ConnectionSocket);
 				good = CloseTCPSocket(WelcomeSocket);
-				return good; 
+				return good;
 				break;
 			default:
 				return false;
