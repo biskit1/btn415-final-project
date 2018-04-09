@@ -45,7 +45,7 @@ bool MySocket::SetIPAddr(std::string ip)
 	//check if things have already been initialized
 	if (bConnect == false) {
 		IPAddr = ip;
-		SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str);
+		SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str());
 		ret = true;
 	}
 	return ret;
@@ -145,10 +145,6 @@ bool MySocket::ConnectTCP()
 					return false;
 				}
 				else {
-					/*SvrAddr.sin_family = AF_INET;
-					SvrAddr.sin_port = htons(Port);
-					SvrAddr.sin_addr.s_addr = inet_addr(IPAddr.c_str());*/
-
 					if ((bind(WelcomeSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr))) == SOCKET_ERROR) {
 						closesocket(WelcomeSocket);
 						bConnect = false;
