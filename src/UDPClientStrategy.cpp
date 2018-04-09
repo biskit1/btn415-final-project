@@ -1,7 +1,8 @@
 #include "UDPClientStrategy.h"
 
-UDPClientStrategy::UDPClientStrategy(SOCKET& sock, sockaddr_in& SvrAddr, sockaddr_in& RespAddr, int& RespAddrSize)
-	: sock(sock),
+UDPClientStrategy::UDPClientStrategy(bool& connected, SOCKET& sock, sockaddr_in& SvrAddr, sockaddr_in& RespAddr, int& RespAddrSize)
+	: connected(connected),
+	sock(sock),
 	SvrAddr(SvrAddr),
 	RespAddr(RespAddr),
 	RespAddrSize(RespAddrSize)
@@ -24,18 +25,35 @@ bool UDPClientStrategy::DisconnectTCP()
 
 bool UDPClientStrategy::SetupUDP()
 {
-	sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	return sock != INVALID_SOCKET;
+	if (connected) {
+		return true;
+	}
+	else {
+		sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		if (sock != INVALID_SOCKET) {
+			connected = true;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 
 bool UDPClientStrategy::TerminateUDP()
 {
-	if (sock != INVALID_SOCKET && closesocket(sock) == 0) {
-		sock = INVALID_SOCKET;
+	if (!connected) {
 		return true;
 	}
 	else {
-		return false;
+		if (sock != INVALID_SOCKET && closesocket(sock) == 0) {
+			sock = INVALID_SOCKET;
+			connected = false;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
 

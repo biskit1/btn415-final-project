@@ -6,12 +6,13 @@
 
 class UDPServerStrategy : public iStrategy {
 private:
+	bool& connected;
 	SOCKET& sock;
 	sockaddr_in& SvrAddr;
 	sockaddr_in& RespAddr;
 	int& RespAddrSize;
 public:
-	UDPServerStrategy(SOCKET&, sockaddr_in&, sockaddr_in&, int&);
+	UDPServerStrategy(bool&, SOCKET&, sockaddr_in&, sockaddr_in&, int&);
 	bool Setup();
 	bool ConnectTCP();
 	bool DisconnectTCP();
