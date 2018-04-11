@@ -121,6 +121,7 @@ MySocket::~MySocket()
 	TerminateUDP();
 	delete[] Buffer;
 	delete commStrategy;
+	WSACleanup();
 }
 
 bool MySocket::StartWSA()
