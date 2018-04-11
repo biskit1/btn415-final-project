@@ -142,6 +142,8 @@
     <ClCompile Include="Milestone02.cpp" />
     <ClCompile Include="MySocket.cpp" />
     <ClCompile Include="PktDef.cpp" />
+    <ClCompile Include="TCPClientStrategy.cpp" />
+    <ClCompile Include="TCPServerStrategy.cpp" />
     <ClCompile Include="UDPClientStrategy.cpp" />
     <ClCompile Include="UDPServerStrategy.cpp" />
   </ItemGroup>
@@ -149,6 +151,8 @@
     <ClInclude Include="MySocket.h" />
     <ClInclude Include="iStrategy.h" />
     <ClInclude Include="PktDef.h" />
+    <ClInclude Include="TCPClientStrategy.h" />
+    <ClInclude Include="TCPServerStrategy.h" />
     <ClInclude Include="UDPClientStrategy.h" />
     <ClInclude Include="UDPServerStrategy.h" />
   </ItemGroup>

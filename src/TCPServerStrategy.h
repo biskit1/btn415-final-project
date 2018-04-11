@@ -4,15 +4,14 @@
 
 #include "iStrategy.h"
 
-class UDPClientStrategy : public iStrategy {
+class TCPServerStrategy : public iStrategy {
 private:
 	bool& connected;
-	SOCKET& sock;
+	SOCKET& WelcomeSocket;
+	SOCKET& ConnectionSocket;
 	sockaddr_in& SvrAddr;
-	sockaddr_in& RespAddr;
-	int& RespAddrSize;
 public:
-	UDPClientStrategy(bool&, SOCKET&, sockaddr_in&, sockaddr_in&, int&);
+	TCPServerStrategy(bool&, SOCKET&, SOCKET&, sockaddr_in&);
 	bool Setup();
 	bool ConnectTCP();
 	bool DisconnectTCP();

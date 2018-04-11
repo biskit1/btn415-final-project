@@ -1,4 +1,6 @@
 #include "MySocket.h"
+#include "TCPClientStrategy.h"
+#include "TCPServerStrategy.h"
 #include "UDPClientStrategy.h"
 #include "UDPServerStrategy.h"
 
@@ -55,6 +57,7 @@ bool MySocket::SetIPAddr(std::string ip)
 
 MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, ConnectionType CType, unsigned int size)
 {
+	commStrategy = nullptr;
 	WelcomeSocket = INVALID_SOCKET;
 	ConnectionSocket = INVALID_SOCKET;
 	MaxSize = DEFAULT_SIZE;
@@ -63,7 +66,6 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 	bConnect = false;
 
 	if (StartWSA()) {
-		commStrategy = nullptr;
 		mySocket = SType;
 		connectionType = CType;
 		if (size != 0) {
@@ -80,15 +82,22 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 		case UDP:
 			switch (mySocket) {
 			case CLIENT:
-				commStrategy = new UDPClientStrategy(ConnectionSocket, SvrAddr, RespAddr, RespAddrSize);
+				commStrategy = new UDPClientStrategy(bConnect, ConnectionSocket, SvrAddr, RespAddr, RespAddrSize);
 				break;
 			case SERVER:
-				commStrategy = new UDPServerStrategy(WelcomeSocket, SvrAddr, RespAddr, RespAddrSize);
+				commStrategy = new UDPServerStrategy(bConnect, WelcomeSocket, SvrAddr, RespAddr, RespAddrSize);
 				break;
 			}
 			break;
 		case TCP:
-			ConnectTCP();
+			switch (mySocket) {
+			case CLIENT:
+				commStrategy = new TCPClientStrategy(bConnect, ConnectionSocket, SvrAddr);
+				break;
+			case SERVER:
+				commStrategy = new TCPServerStrategy(bConnect, WelcomeSocket, ConnectionSocket, SvrAddr);
+				break;
+			}
 			break;
 		}
 
@@ -97,7 +106,6 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 		}
 	}
 	else {
-		commStrategy = nullptr;
 		mySocket = INVALID;
 		connectionType = NONE;
 		IPAddr = "";
@@ -109,6 +117,8 @@ MySocket::MySocket(SocketType SType, std::string IP, unsigned int port, Connecti
 
 MySocket::~MySocket()
 {
+	DisconnectTCP();
+	TerminateUDP();
 	delete[] Buffer;
 	delete commStrategy;
 }
@@ -129,169 +139,30 @@ bool MySocket::WSAStarted() {
 
 bool MySocket::ConnectTCP()
 {
-	switch (connectionType) {
-	case TCP:
-		if (bConnect) {
-			return true;
-		}
-		else {
-			switch (mySocket) {
-			case CLIENT:
-				ConnectionSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-				if (ConnectionSocket == INVALID_SOCKET) {
-					return false;
-				}
-				else {
-					if ((connect(ConnectionSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr))) == SOCKET_ERROR) {
-						closesocket(ConnectionSocket);
-						return false;
-					}
-					else {
-						bConnect = true;
-						return bConnect;
-					}
-				}
-				break;
-			case SERVER:
-				WelcomeSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-				if (WelcomeSocket == INVALID_SOCKET) {
-					return false;
-				}
-				else {
-					if ((bind(WelcomeSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr))) == SOCKET_ERROR) {
-						closesocket(WelcomeSocket);
-						bConnect = false;
-						return bConnect;
-					}
-					else {
-						if (listen(WelcomeSocket, 1) == SOCKET_ERROR) {
-							closesocket(WelcomeSocket);
-							bConnect = false;
-							return bConnect;
-						}
-						else {
-							if ((ConnectionSocket = accept(WelcomeSocket, NULL, NULL)) == SOCKET_ERROR) {
-								closesocket(WelcomeSocket);
-								bConnect = false;
-								return bConnect;
-							}
-							bConnect = true;
-							return bConnect;
-						}
-					}
-				}
-				break;
-			default:
-				return false;
-			}
-		}
-		break;
-	case UDP:
-		return false;
-		break;
-	default:
-		return false;
-	}
+	return WSAStarted() && commStrategy->ConnectTCP();
 }
 
 bool MySocket::DisconnectTCP()
 {
-	switch (connectionType) {
-	case TCP:
-		if (bConnect) {
-			switch (mySocket) {
-			case CLIENT:
-				return CloseTCPSocket(ConnectionSocket);
-				break;
-			case SERVER:
-				return CloseTCPSocket(ConnectionSocket) && CloseTCPSocket(WelcomeSocket);
-				break;
-			default:
-				return false;
-			}
-		}
-		else {
-			return false;
-		}
-		break;
-	case UDP:
-		return false;
-		break;
-	default:
-		return false;
-	}
-}
-
-bool MySocket::CloseTCPSocket(SOCKET& socket) {
-	if (socket == INVALID_SOCKET) {
-		return false;
-	}
-	else {
-		if (closesocket(socket) == 0) {
-			socket = INVALID_SOCKET;
-			bConnect = false;
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+	return WSAStarted() && commStrategy->DisconnectTCP();
 }
 
 bool MySocket::SetupUDP()
 {
-	switch (connectionType) {
-	case TCP:
-		return false;
-		break;
-	case UDP:
-		if (!bConnect && WSAStarted()) {
-			bConnect = commStrategy->SetupUDP();
-		}
-		return bConnect;
-		break;
-	}
+	return WSAStarted() && commStrategy->SetupUDP();
 }
 
 bool MySocket::TerminateUDP()
 {
-	switch (connectionType) {
-	case TCP:
-		return false;
-		break;
-	case UDP:
-		if (bConnect && WSAStarted() && commStrategy->TerminateUDP()) {
-			bConnect = false;
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+	return WSAStarted() && commStrategy->TerminateUDP();
 }
 
 int MySocket::SendData(const char * data, int numBytes)
 {
 	int bytesSent = 0;
 
-	if (bConnect) {
-		switch (connectionType) {
-		case TCP:
-			switch (mySocket) {
-			case CLIENT:
-				bytesSent = send(ConnectionSocket, data, numBytes, 0);
-				break;
-			case SERVER:
-				bytesSent = send(ConnectionSocket, data, numBytes, 0);
-				break;
-			}
-			break;
-		case UDP:
-			if (WSAStarted()) {
-				bytesSent = commStrategy->SendData(data, numBytes);
-			}			
-			break;
-		}
+	if (bConnect && WSAStarted()) {
+		bytesSent = commStrategy->SendData(data, numBytes);
 	}
 
 	return bytesSent;
@@ -300,24 +171,9 @@ int MySocket::SendData(const char * data, int numBytes)
 int MySocket::GetData(char * data)
 {
 	int bytesWritten = 0;
-	if (bConnect) {
-		switch (connectionType) {
-		case TCP:
-			switch (mySocket) {
-			case CLIENT:
-				bytesWritten = recv(ConnectionSocket, Buffer, MaxSize, 0);
-				break;
-			case SERVER:
-				bytesWritten = recv(ConnectionSocket, Buffer, MaxSize, 0);
-				break;
-			}
-			break;
-		case UDP:
-			if (WSAStarted()) {
-				bytesWritten = commStrategy->GetData(Buffer, MaxSize);
-			}
-			break;
-		}
+
+	if (bConnect && WSAStarted()) {
+		bytesWritten = commStrategy->GetData(Buffer, MaxSize);
 	}
 
 	if (bytesWritten > 0) {

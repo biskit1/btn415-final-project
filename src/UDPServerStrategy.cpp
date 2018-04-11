@@ -1,7 +1,8 @@
 #include "UDPServerStrategy.h"
 
-UDPServerStrategy::UDPServerStrategy(SOCKET& sock, sockaddr_in& SvrAddr, sockaddr_in& RespAddr, int& RespAddrSize)
-	: sock(sock),
+UDPServerStrategy::UDPServerStrategy(bool& connected, SOCKET& sock, sockaddr_in& SvrAddr, sockaddr_in& RespAddr, int& RespAddrSize)
+	: connected(connected),
+	sock(sock),
 	SvrAddr(SvrAddr),
 	RespAddr(RespAddr),
 	RespAddrSize(RespAddrSize)
@@ -24,26 +25,38 @@ bool UDPServerStrategy::DisconnectTCP()
 
 bool UDPServerStrategy::SetupUDP()
 {
-	sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (sock != INVALID_SOCKET) {
-		if ((bind(sock, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr))) != SOCKET_ERROR) {
-			return true;
-		}
-		else {
-			closesocket(sock);
-		}
+	if (connected) {
+		return true;
 	}
-	return false;
+	else {
+		sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		if (sock != INVALID_SOCKET) {
+			if ((bind(sock, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr))) != SOCKET_ERROR) {
+				connected = true;
+				return true;
+			}
+			else {
+				closesocket(sock);
+			}
+		}
+		return false;
+	}
 }
 
 bool UDPServerStrategy::TerminateUDP()
 {
-	if (sock != INVALID_SOCKET && closesocket(sock) == 0) {
-		sock = INVALID_SOCKET;
+	if (!connected) {
 		return true;
 	}
 	else {
-		return false;
+		if (sock != INVALID_SOCKET && closesocket(sock) == 0) {
+			sock = INVALID_SOCKET;
+			connected = false;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
 
