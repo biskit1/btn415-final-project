@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Milestone02.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="MySocket.cpp" />
     <ClCompile Include="PktDef.cpp" />
     <ClCompile Include="TCPClientStrategy.cpp" />
