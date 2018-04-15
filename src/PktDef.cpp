@@ -34,7 +34,8 @@ PktDef::PktDef(char* buffer) {
 	CmdPacket.Header.Padding = 0;
 
 	memcpy(&CmdPacket.Header.Length, &buffer[5], sizeof(Packet::Header.Length));
-	if (CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC) == 0) {
+	if (CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC) == 0) 
+	{
 		CmdPacket.Data = nullptr;
 	}
 	else
@@ -74,11 +75,13 @@ char* PktDef::GenPacket()
 void PktDef::SetBodyData(char* data, int size)
 {
 	delete[] CmdPacket.Data;
-	if (size > 0) {
+	if (size > 0) 
+	{
 		CmdPacket.Data = new char[size];
 		memcpy(CmdPacket.Data, data, size);
 	}
-	else {
+	else 
+	{
 		CmdPacket.Data = nullptr; 
 	}
 	CmdPacket.Header.Length = static_cast<unsigned char>(HEADERSIZE + size + sizeof(Packet::CRC));
