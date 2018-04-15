@@ -11,6 +11,7 @@
 #define TELPKTSIZE 12
 
 bool ExeComplete;
+
 std::string makeHex(char * pkt, int size);
 int getDuration();
 void telemetryThread(std::string Ip, int TelPort);
@@ -46,8 +47,10 @@ int main(int argc, char *argv[])
 
 std::string makeHex(char * pkt, int size) {
 	std::stringstream stream;
+
 	for (int i = 0; i < size; i++) {
 		stream << std::hex << (int)pkt[i];
+
 		if (i != size - 1) {
 			stream << ", ";
 		}
@@ -72,14 +75,19 @@ int getDuration() {
 
 void telemetryThread(std::string Ip, int TelPort) {
 	std::ofstream ofs("Telemetry.txt", std::ofstream::out);
+
 	MySocket socket(SocketType::CLIENT, Ip, TelPort, ConnectionType::TCP, TELPKTSIZE);
+
 	if (socket.ConnectTCP()) {
 		char rx_buffer[255];
 		int size;
+
 		while (!ExeComplete) {
 			size = socket.GetData(rx_buffer);
+
 			if (size > 0) {
 				PktDef TelPkt(rx_buffer);
+
 				if (size != TelPkt.GetLength()) {
 					std::cout << "ERROR: Packet recieved is not of the expected size!" << std::endl;
 				}
@@ -100,17 +108,19 @@ void telemetryThread(std::string Ip, int TelPort) {
 			}
 		}
 	}
+
 	ofs.close();
 }
 
 void StartCSI(std::string ip, int port) {
 	std::ofstream ofs("Client_Output.txt");
+
 	if (!ofs.is_open())
 		std::cout << "ERROR:  Failed to open Client_Output.txt file" << std::endl;
-	MySocket ComSocket(SocketType::CLIENT, ip, port, ConnectionType::TCP, 100);
-	// if 3 way handshake was successfull 
-	if (ComSocket.ConnectTCP()) {
 
+	MySocket ComSocket(SocketType::CLIENT, ip, port, ConnectionType::TCP, 100);
+
+	if (ComSocket.ConnectTCP()) {
 		int cmdSelection = -1;
 		int pktCount = 0;
 
@@ -144,6 +154,7 @@ void StartCSI(std::string ip, int port) {
 				case 1:
 					TestPkt.SetCmd(DRIVE);
 					std::cout << "Select a direction to drive: " << std::endl;
+
 					do {
 						std::cout << "1. Forward\n2. Backward\n3. Right\n4. Left" << std::endl;
 						std::cin >> cmdSelection;
@@ -157,20 +168,24 @@ void StartCSI(std::string ip, int port) {
 							cmdSelection = -1;
 						}
 					} while (cmdSelection == -1);
+
 					TestPkt.SetBodyData((char*)&DriveCmd, 2);
 					TestPkt.SetPktCount(++pktCount);
 					TestPkt.CalcCRC();
 					ptr = TestPkt.GenPacket();
 					ComSocket.SendData(ptr, TestPkt.GetLength());
+
 					ofs << "Raw packet data to transmit: " << makeHex(ptr, TestPkt.GetLength()) << std::endl;
 					ofs << "Transmitting Packet..." << std::endl;
 					break;
 				case 2:
 					TestPkt.SetCmd(CLAW);
 					std::cout << "Select a motion: " << std::endl;
+
 					do {
 						std::cout << "1. Open\n2. Close" << std::endl;
 						std::cin >> cmdSelection;
+
 						switch (cmdSelection) {
 						case 1:
 							myAction.Action = OPEN;
@@ -201,9 +216,11 @@ void StartCSI(std::string ip, int port) {
 				case 3:
 					TestPkt.SetCmd(ARM);
 					std::cout << "Select a motion: " << std::endl;
+
 					do {
 						std::cout << "1. Up\n2. Down" << std::endl;
 						std::cin >> cmdSelection;
+
 						switch (cmdSelection) {
 						case 1:
 							myAction.Action = UP;
@@ -284,8 +301,10 @@ void StartCSI(std::string ip, int port) {
 					cmdSelection = -1;
 				}
 			} while (cmdSelection == -1);
+
 			bytesReceived = ComSocket.GetData(rxBuffer);
 			PktDef RxPkt(rxBuffer);
+
 			if (RxPkt.CheckCRC(rxBuffer, bytesReceived)) {
 				if (RxPkt.GetAck() && RxPkt.GetCmd() != UNKNOWN && RxPkt.GetCmd() != STATUS) {
 					std::cout << "Ackknowledgement Received- Packet delivered successfully" << std::endl;
@@ -297,10 +316,12 @@ void StartCSI(std::string ip, int port) {
 					std::cout << "Packet delivery was unsuccessful" << std::endl;
 					ofs << "Packet delivery was unsuccessful" << std::endl;
 					ofs << "Raw packet data: " << makeHex(rxBuffer, RxPkt.GetLength()) << std::endl;
+
 					if (RxPkt.GetCmd() == UNKNOWN && RxPkt.GetAck() == 0) {
 						std::cout << "Data received in body: " << RxPkt.GetBodyData() << std::endl;
 						ofs << "Data received in body: " << RxPkt.GetBodyData() << std::endl;
 					}
+
 					loop = true;
 				}
 			}
