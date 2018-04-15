@@ -64,6 +64,7 @@ char* PktDef::GenPacket()
 	memcpy(&RawBuffer[0], &CmdPacket.Header.PktCount, sizeof(Packet::Header.PktCount));
 
 	memcpy(&RawBuffer[4], GetFlagData(), sizeof(char));
+	memcpy(&RawBuffer[5], &CmdPacket.Header.Length, sizeof(Packet::Header.Length));
 	if (CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC) == 0) {
 		memcpy(&RawBuffer[6], CmdPacket.Data, CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
 	}
