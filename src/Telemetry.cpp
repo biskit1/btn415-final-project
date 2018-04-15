@@ -25,7 +25,7 @@ std::string Telemetry::toString(displayType type) const
 	else if (type == MULTI) {
 		sep = "\n";
 	}
-	msg += "Packet: " + std::to_string(numPacket) + sep;
+	msg += "Packet: " + std::to_string(numPacket + 1) + sep;
 	msg += "Packet in Hex: " + hexString + sep;
 	msg += "Sonar Reading: " + std::to_string(sonarData) + sep;
 	msg += "Arm Reading: " + std::to_string(armData) + sep;
