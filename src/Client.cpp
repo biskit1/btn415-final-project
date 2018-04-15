@@ -260,7 +260,7 @@ void StartCSI(std::string &ip, int &port) {
 			if (RxPkt.CheckCRC(rxBuffer, bytesReceived)) {
 				if (RxPkt.GetAck() && RxPkt.GetCmd() != UNKNOWN && RxPkt.GetCmd() != STATUS) {
 					std::cout << "Ackknowledgement Received- Packet delivered successfully" << std::endl;
-					pktCount = RxPkt.GetPktCount();//??????????
+					pktCount = RxPkt.GetPktCount();
 				}
 				else {
 					std::cout << "Packet delivery was unsuccessful" << std::endl;
