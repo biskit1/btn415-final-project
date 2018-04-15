@@ -3,27 +3,31 @@
 #include <iostream>
 #include <fstream> 
 #include <string>
+#include <sstream>
 #include "MySocket.h"
 #include "PktDef.h"
 #include "Telemetry.h"
 
 bool ExeComplete;
+std::string makeHex(char * pkt);
+void telemetryThread(std::string Ip, int TelPort);
 
 //order of arguements: IP, Com, Tel 
 int main(int argc, char *argv[])
 {
 	ExeComplete = false;
-	if(argc != 4){
+	if (argc != 4) {
 		std::cout << "Please enter the IP Address, the Command Port, and the Telemetry Port in that order." << std::endl;
 		return 1;
 	}
-	else{
+	else {
 		std::string IP = argv[1];
 		int ComPort = std::stoi(argv[2]);
 		int TelPort = std::stoi(argv[3]);
 
 		//spawn command thread and detach
 		//spawn telemetry thread and detach
+		std::thread Tel(telemetryThread, IP, TelPort);
 
 		while (!ExeComplete) {
 			//???
@@ -31,6 +35,19 @@ int main(int argc, char *argv[])
 	}
 
 	return 0;
+}
+
+std::string makeHex(char * pkt) {
+	std::string hexString;
+	std::stringstream stream;
+	for (int i = 0; i < 12; i++) {
+		stream << std::hex << (int)pkt[i];
+		if (i != 11) {
+			stream << ", ";
+		}
+	}
+	hexString = stream.str();
+	return hexString;
 }
 
 
@@ -58,7 +75,7 @@ void telemetryThread(std::string Ip, int TelPort) {
 							std::cout << "ERROR: Command is not Status!";
 						}
 						else {
-							Telemetry tel(TelPkt.GetBodyData, TelPkt.GetPktCount());
+							Telemetry tel(TelPkt.GetBodyData(), TelPkt.GetPktCount(), makeHex(rx_buffer));
 							ofs << tel.toString(MULTI);
 						}
 					}
@@ -67,4 +84,5 @@ void telemetryThread(std::string Ip, int TelPort) {
 			}
 		}
 	}
+	ofs.close();
 }

@@ -144,6 +144,7 @@
     <ClCompile Include="PktDef.cpp" />
     <ClCompile Include="TCPClientStrategy.cpp" />
     <ClCompile Include="TCPServerStrategy.cpp" />
+    <ClCompile Include="Telemetry.cpp" />
     <ClCompile Include="UDPClientStrategy.cpp" />
     <ClCompile Include="UDPServerStrategy.cpp" />
   </ItemGroup>
@@ -153,6 +154,7 @@
     <ClInclude Include="PktDef.h" />
     <ClInclude Include="TCPClientStrategy.h" />
     <ClInclude Include="TCPServerStrategy.h" />
+    <ClInclude Include="Telemetry.h" />
     <ClInclude Include="UDPClientStrategy.h" />
     <ClInclude Include="UDPServerStrategy.h" />
   </ItemGroup>

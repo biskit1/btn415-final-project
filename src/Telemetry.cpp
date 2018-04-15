@@ -1,6 +1,7 @@
 #include "Telemetry.h"
 
-Telemetry::Telemetry(char * body, int packetNum) {
+Telemetry::Telemetry(char * body, int packetNum, std::string hex) {
+
 	memcpy(&sonarData, &body[0], sizeof(sonarData));
 	memcpy(&armData, &body[2], sizeof(armData));
 	char *ptr = &body[4];
@@ -10,6 +11,7 @@ Telemetry::Telemetry(char * body, int packetNum) {
 	clawOpen = (*ptr >> 3) & 1;
 	clawClosed = (*ptr >> 4) & 1;
 	numPacket = packetNum;
+	hexString = hex;
 }
 
 std::string Telemetry::toString(displayType type) const
@@ -24,6 +26,7 @@ std::string Telemetry::toString(displayType type) const
 		sep = "\n";
 	}
 	msg += "Packet: " + numPacket + sep;
+	msg += "Packet in Hex: " + hexString;
 	msg += "Sonar Reading: " + std::to_string(sonarData) + sep;
 	msg += "Arm Reading: " + std::to_string(armData) + sep;
 	if (driveFlag) {
@@ -44,6 +47,7 @@ std::string Telemetry::toString(displayType type) const
 	else if (clawClosed) {
 		msg += "Claw is Closed" + sep;
 	}
+	msg += sep;
 	return msg;
 }
 

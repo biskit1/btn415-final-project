@@ -1,5 +1,5 @@
 #pragma once
-#include<iostream>
+#include <iostream>
 #include <fstream>
 #include <string>
 
@@ -14,9 +14,10 @@ class Telemetry {
 	bool clawOpen;
 	bool clawClosed;
 	int numPacket;
+	std::string hexString;
 
 public:
-	Telemetry(char *, int);
+	Telemetry(char *, int, std::string);
 	std::string toString(displayType) const;
 
 };
