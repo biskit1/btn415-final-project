@@ -38,7 +38,9 @@ PktDef::PktDef(char* buffer) {
 		CmdPacket.Data = nullptr;
 	}
 	else
+	{
 		SetBodyData(&buffer[6], CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
+	}
 	memcpy(&CmdPacket.CRC, &buffer[CmdPacket.Header.Length - sizeof(Packet::CRC)], sizeof(Packet::CRC));
 }
 
