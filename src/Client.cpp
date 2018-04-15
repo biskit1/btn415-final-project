@@ -1,9 +1,9 @@
-
-#include <thread>
+#include <fstream>
 #include <iostream>
-#include <fstream> 
-#include <string>
 #include <sstream>
+#include <string>
+#include <thread>
+
 #include "MySocket.h"
 #include "PktDef.h"
 #include "Telemetry.h"
