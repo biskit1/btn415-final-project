@@ -34,8 +34,14 @@ PktDef::PktDef(char* buffer) {
 	CmdPacket.Header.Padding = 0;
 
 	memcpy(&CmdPacket.Header.Length, &buffer[5], sizeof(Packet::Header.Length));
-
-	SetBodyData(&buffer[6], CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
+	if (CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC) == 0) 
+	{
+		CmdPacket.Data = nullptr;
+	}
+	else
+	{
+		SetBodyData(&buffer[6], CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
+	}
 	memcpy(&CmdPacket.CRC, &buffer[CmdPacket.Header.Length - sizeof(Packet::CRC)], sizeof(Packet::CRC));
 }
 
@@ -59,7 +65,9 @@ char* PktDef::GenPacket()
 
 	memcpy(&RawBuffer[4], GetFlagData(), sizeof(char));
 	memcpy(&RawBuffer[5], &CmdPacket.Header.Length, sizeof(Packet::Header.Length));
-	memcpy(&RawBuffer[6], CmdPacket.Data, CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
+	if (CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC) != 0) {
+		memcpy(&RawBuffer[6], CmdPacket.Data, CmdPacket.Header.Length - HEADERSIZE - sizeof(Packet::CRC));
+	}
 	memcpy(&RawBuffer[CmdPacket.Header.Length - sizeof(Packet::CRC)], &CmdPacket.CRC, sizeof(Packet::CRC));
 
 	return RawBuffer;
@@ -68,9 +76,15 @@ char* PktDef::GenPacket()
 void PktDef::SetBodyData(char* data, int size)
 {
 	delete[] CmdPacket.Data;
-
-	CmdPacket.Data = new char[size];
-	memcpy(CmdPacket.Data, data, size);
+	if (size > 0) 
+	{
+		CmdPacket.Data = new char[size];
+		memcpy(CmdPacket.Data, data, size);
+	}
+	else 
+	{
+		CmdPacket.Data = nullptr; 
+	}
 	CmdPacket.Header.Length = static_cast<unsigned char>(HEADERSIZE + size + sizeof(Packet::CRC));
 }
 
@@ -174,7 +188,6 @@ void PktDef::CalcCRC() {
 	int pktCount = GetPktCount();
 	int sizeBody = len - HEADERSIZE - sizeof(Packet::CRC);
 	int bufferSize = sizeof(pktCount) + sizeof(char) + sizeof(len) + sizeBody;
-	char* bodyPtr = GetBodyData();
 
 	int count = 0;
 
@@ -185,7 +198,10 @@ void PktDef::CalcCRC() {
 	memcpy(&myBuffer[4], ptr, sizeof(char));
 
 	memcpy(&myBuffer[5], &len, sizeof(len));
-	memcpy(&myBuffer[6], bodyPtr, sizeBody);
+	if (sizeBody > 0) {
+		char* bodyPtr = GetBodyData();
+		memcpy(&myBuffer[6], bodyPtr, sizeBody);
+	}
 
 	for (int i = 0; i < bufferSize; i++) {
 		for (int j = 0; j < 8; j++) {
