@@ -79,7 +79,7 @@ void telemetryThread(std::string Ip, int TelPort) {
 						}
 						else {
 							Telemetry tel(TelPkt.GetBodyData(), TelPkt.GetPktCount(), makeHex(rx_buffer, TelPkt.GetLength()));
-							ofs << tel.toString(MULTI);
+							ofs << tel.toString(MULTI) << std::flush;
 						}
 					}
 				}
