@@ -53,9 +53,7 @@ std::string makeHex(char * pkt, int size) {
 	return hexString;
 }
 
-
 void telemetryThread(std::string Ip, int TelPort) {
-	//all Telemetry Packets are of size 12
 	std::ofstream ofs("Telemetry.txt", std::ofstream::out);
 	MySocket socket(SocketType::CLIENT, Ip, TelPort, ConnectionType::TCP, TELPKTSIZE);
 	if (socket.ConnectTCP()) {
@@ -81,7 +79,6 @@ void telemetryThread(std::string Ip, int TelPort) {
 							ofs << tel.toString(MULTI);
 						}
 					}
-
 				}
 			}
 		}
