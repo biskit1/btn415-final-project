@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 void telemetryThread(std::string Ip, int TelPort) {
 	//all Telemetry Packets are of size 12
 	std::ofstream ofs("Telemetry.txt", std::ofstream::out);
-	MySocket socket(SocketType::CLIENT, Ip, TelPort, ConnectionType::TCP, 7);
+	MySocket socket(SocketType::CLIENT, Ip, TelPort, ConnectionType::TCP, 12);
 	if (socket.ConnectTCP()) {
 		char rx_buffer[255];
 		int size;
@@ -46,7 +46,7 @@ void telemetryThread(std::string Ip, int TelPort) {
 			size = socket.GetData(rx_buffer);
 			if (size > 0) {
 				PktDef TelPkt(rx_buffer);
-				if (size != TelPkt.GetLength) {
+				if (size != TelPkt.GetLength()) {
 					std::cout << "ERROR: Packet recieved is not of the same size!" << std::endl;
 				}
 				else {
@@ -54,7 +54,7 @@ void telemetryThread(std::string Ip, int TelPort) {
 						std::cout << "ERROR: CRC does not match!";
 					}
 					else {
-						if (TelPkt.GetCmd != STATUS) {
+						if (TelPkt.GetCmd() != STATUS) {
 							std::cout << "ERROR: Command is not Status!";
 						}
 						else {
