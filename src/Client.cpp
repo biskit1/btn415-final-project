@@ -13,7 +13,7 @@
 bool ExeComplete;
 std::string makeHex(char * pkt, int size);
 void telemetryThread(std::string Ip, int TelPort);
-void StartCSI(std::string &ip, int &port);
+void StartCSI(std::string ip, int port);
 
 //order of arguements: IP, Com, Tel 
 int main(int argc, char *argv[])
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 		int TelPort = std::stoi(argv[3]);
 
 		//spawn command thread and detach
-		std::thread CommandThread(StartCSI, std::ref(IP), std::ref(ComPort));
+		std::thread CommandThread(StartCSI, IP, ComPort);
 		CommandThread.detach();
 		//spawn telemetry thread and detach
 		std::thread Tel(telemetryThread, IP, TelPort);
@@ -89,7 +89,7 @@ void telemetryThread(std::string Ip, int TelPort) {
 	ofs.close();
 }
 
-void StartCSI(std::string &ip, int &port) {
+void StartCSI(std::string ip, int port) {
 	std::ofstream ofs("Client_Output.txt");
 	if (!ofs.is_open())
 		std::cout << "ERROR:  Failed to open Client_Output.txt file" << std::endl;
