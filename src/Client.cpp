@@ -59,7 +59,6 @@ void telemetryThread(std::string Ip, int TelPort) {
 	if (socket.ConnectTCP()) {
 		char rx_buffer[255];
 		int size;
-		bool valid;
 		while (!ExeComplete) {
 			size = socket.GetData(rx_buffer);
 			if (size > 0) {
