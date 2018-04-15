@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
 }
 
 std::string makeHex(char * pkt, int size) {
-	std::string hexString;
 	std::stringstream stream;
 	for (int i = 0; i < size; i++) {
 		stream << std::hex << (int)pkt[i];
@@ -53,8 +52,8 @@ std::string makeHex(char * pkt, int size) {
 			stream << ", ";
 		}
 	}
-	hexString = stream.str();
-	return hexString;
+
+	return stream.str();
 }
 
 int getDuration() {
