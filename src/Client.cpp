@@ -181,6 +181,8 @@ void StartCSI(std::string &ip, int &port) {
 					TestPkt.CalcCRC();
 					ptr = TestPkt.GenPacket();
 					ComSocket.SendData(ptr, TestPkt.GetLength());
+					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+					ofs << "Transmitting Packet..." << std::endl;
 					break;
 				case 2:
 					TestPkt.SetCmd(CLAW);
@@ -196,6 +198,8 @@ void StartCSI(std::string &ip, int &port) {
 							TestPkt.CalcCRC();
 							ptr = TestPkt.GenPacket();
 							ComSocket.SendData(ptr, TestPkt.GetLength());
+							ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+							ofs << "Transmitting Packet..." << std::endl;
 							break;
 						case 2:
 							myAction.Action = CLOSE;
@@ -204,6 +208,8 @@ void StartCSI(std::string &ip, int &port) {
 							TestPkt.CalcCRC();
 							ptr = TestPkt.GenPacket();
 							ComSocket.SendData(ptr, TestPkt.GetLength());
+							ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+							ofs << "Transmitting Packet..." << std::endl;
 							break;
 						default:
 							std::cout << "Bad input - please select a motion from the following options (input 1 or 2): " << std::endl;
@@ -225,6 +231,8 @@ void StartCSI(std::string &ip, int &port) {
 							TestPkt.CalcCRC();
 							ptr = TestPkt.GenPacket();
 							ComSocket.SendData(ptr, TestPkt.GetLength());
+							ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+							ofs << "Transmitting Packet..." << std::endl;
 							break;
 						case 2:
 							myAction.Action = DOWN;
@@ -233,6 +241,8 @@ void StartCSI(std::string &ip, int &port) {
 							TestPkt.CalcCRC();
 							ptr = TestPkt.GenPacket();
 							ComSocket.SendData(ptr, TestPkt.GetLength());
+							ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+							ofs << "Transmitting Packet..." << std::endl;
 							break;
 						default:
 							std::cout << "Bad input - please select a motion from the following options (input 1 or 2): " << std::endl;
@@ -248,6 +258,8 @@ void StartCSI(std::string &ip, int &port) {
 					TestPkt.CalcCRC();
 					ptr = TestPkt.GenPacket();
 					ComSocket.SendData(ptr, TestPkt.GetLength());
+					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+					ofs << "Transmitting Packet..." << std::endl;
 					loop = false;
 					break;
 				default:
@@ -260,11 +272,16 @@ void StartCSI(std::string &ip, int &port) {
 			if (RxPkt.CheckCRC(rxBuffer, bytesReceived)) {
 				if (RxPkt.GetAck() && RxPkt.GetCmd() != UNKNOWN && RxPkt.GetCmd() != STATUS) {
 					std::cout << "Ackknowledgement Received- Packet delivered successfully" << std::endl;
+					ofs << "Ackknowledgement Received- Packet delivered successfully" << std::endl;
+					ofs << "Raw packet data: " << std::endl;
+					ofs << makeHex(rxBuffer, RxPkt.GetLength()) << std::endl;
 					pktCount = RxPkt.GetPktCount();
 				}
 				else {
 					std::cout << "Packet delivery was unsuccessful" << std::endl;
 					ofs << "Packet delivery was unsuccessful" << std::endl;
+					ofs << "Raw packet data: " << std::endl;
+					ofs << makeHex(rxBuffer, RxPkt.GetLength()) << std::endl;
 					if (RxPkt.GetCmd() == UNKNOWN && RxPkt.GetAck() == 0) {
 						std::cout << "Data received in body: " << RxPkt.GetBodyData() << std::endl;
 						ofs << "Data received in body: " << RxPkt.GetBodyData() << std::endl;
