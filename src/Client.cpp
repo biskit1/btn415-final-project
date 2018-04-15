@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 		//spawn command thread and detach
 		//spawn telemetry thread and detach
 		std::thread Tel(telemetryThread, IP, TelPort);
+		Tel.detach();
 
 		while (!ExeComplete) {
 			//???
