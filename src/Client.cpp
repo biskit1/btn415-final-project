@@ -12,6 +12,7 @@
 
 bool ExeComplete;
 std::string makeHex(char * pkt, int size);
+int getDuration();
 void telemetryThread(std::string Ip, int TelPort);
 void StartCSI(std::string ip, int port);
 
@@ -54,6 +55,20 @@ std::string makeHex(char * pkt, int size) {
 	}
 	hexString = stream.str();
 	return hexString;
+}
+
+int getDuration() {
+	int duration;
+
+	std::cout << "Input number of seconds to run command for: " << std::endl;
+	std::cin >> duration;
+
+	while (duration <= 0) {
+		std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
+		std::cin >> duration;
+	}
+
+	return duration;
 }
 
 void telemetryThread(std::string Ip, int TelPort) {
@@ -133,49 +148,12 @@ void StartCSI(std::string ip, int port) {
 					do {
 						std::cout << "1. Forward\n2. Backward\n3. Right\n4. Left" << std::endl;
 						std::cin >> cmdSelection;
-						switch (cmdSelection) {
-							//set motorbody
-						case 1:
+
+						if (cmdSelection > 0 || cmdSelection < 5) {
 							DriveCmd.Direction = cmdSelection;
-							std::cout << "Input number of seconds to run command for: " << std::endl;
-							std::cin >> cmdSelection;
-							while (cmdSelection <= 0) {
-								std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
-								std::cin >> cmdSelection;
-							}
-							DriveCmd.Duration = cmdSelection;
-							break;
-						case 2:
-							DriveCmd.Direction = cmdSelection;
-							std::cout << "Input number of seconds to run command for: " << std::endl;
-							std::cin >> cmdSelection;
-							while (cmdSelection <= 0) {
-								std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
-								std::cin >> cmdSelection;
-							}
-							DriveCmd.Duration = cmdSelection;
-							break;
-						case 3:
-							DriveCmd.Direction = cmdSelection;
-							std::cout << "Input number of seconds to run command for: " << std::endl;
-							std::cin >> cmdSelection;
-							while (cmdSelection <= 0) {
-								std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
-								std::cin >> cmdSelection;
-							}
-							DriveCmd.Duration = cmdSelection;
-							break;
-						case 4:
-							DriveCmd.Direction = cmdSelection;
-							std::cout << "Input number of seconds to run command for: " << std::endl;
-							std::cin >> cmdSelection;
-							while (cmdSelection <= 0) {
-								std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
-								std::cin >> cmdSelection;
-							}
-							DriveCmd.Duration = cmdSelection;
-							break;
-						default:
+							DriveCmd.Duration = getDuration();
+						}
+						else {
 							std::cout << "Bad input - please select a direction from the following options (input 1, 2, 3 or 4): " << std::endl;
 							cmdSelection = -1;
 						}
