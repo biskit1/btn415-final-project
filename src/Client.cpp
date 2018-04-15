@@ -11,17 +11,22 @@ bool ExeComplete;
 int main(int argc, char *argv[])
 {
 	ExeComplete = false;
+	if(argc != 4){
+		std::cout << "Please enter the IP Address, the Command Port, and the Telemetry Port in that order." << std::endl;
+		return 1;
+	}
+	else{
+		std::string IP = argv[1];
+		int ComPort = std::stoi(argv[2]);
+		int TelPort = std::stoi(argv[3]);
 
-	std::string IP = argv[1];
-	int ComPort = std::stoi(argv[2]);
-	int TelPort = std::stoi(argv[3]);
+		//spawn command thread and detach
+		//spawn telemetry thread and detach
 
-	//spawn command thread and detach
-	//spawn telemetry thread and detach
-
-	while (!ExeComplete) {
-		//???
+		while (!ExeComplete) {
+			//???
+		}
 	}
 
-	return 1;
+	return 0;
 }
