@@ -14,6 +14,7 @@ bool ExeComplete;
 
 std::string makeHex(char * pkt, int size);
 int getDuration();
+void transmitPacket(std::ofstream& ofs, MySocket& sock, char* pkt, int length);
 void telemetryThread(std::string Ip, int TelPort);
 void StartCSI(std::string ip, int port);
 
@@ -71,6 +72,13 @@ int getDuration() {
 	}
 
 	return duration;
+}
+
+void transmitPacket(std::ofstream& ofs, MySocket& sock, char* pkt, int length) {
+	sock.SendData(pkt, length);
+
+	ofs << "Raw packet data to transmit: " << makeHex(pkt, length) << std::endl;
+	ofs << "Transmitting Packet..." << std::endl;
 }
 
 void telemetryThread(std::string Ip, int TelPort) {
@@ -173,10 +181,7 @@ void StartCSI(std::string ip, int port) {
 					TestPkt.SetPktCount(++pktCount);
 					TestPkt.CalcCRC();
 					ptr = TestPkt.GenPacket();
-					ComSocket.SendData(ptr, TestPkt.GetLength());
-
-					ofs << "Raw packet data to transmit: " << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet..." << std::endl;
+					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 					break;
 				case 2:
 					TestPkt.SetCmd(CLAW);
@@ -193,9 +198,7 @@ void StartCSI(std::string ip, int port) {
 							TestPkt.SetPktCount(++pktCount);
 							TestPkt.CalcCRC();
 							ptr = TestPkt.GenPacket();
-							ComSocket.SendData(ptr, TestPkt.GetLength());
-							ofs << "Raw packet data to transmit: " << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-							ofs << "Transmitting Packet..." << std::endl;
+							transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 							break;
 						case 2:
 							myAction.Action = CLOSE;
@@ -203,9 +206,7 @@ void StartCSI(std::string ip, int port) {
 							TestPkt.SetPktCount(++pktCount);
 							TestPkt.CalcCRC();
 							ptr = TestPkt.GenPacket();
-							ComSocket.SendData(ptr, TestPkt.GetLength());
-							ofs << "Raw packet data to transmit: " << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-							ofs << "Transmitting Packet..." << std::endl;
+							transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 							break;
 						default:
 							std::cout << "Bad input - please select a motion from the following options (input 1 or 2): " << std::endl;
@@ -228,9 +229,7 @@ void StartCSI(std::string ip, int port) {
 							TestPkt.SetPktCount(++pktCount);
 							TestPkt.CalcCRC();
 							ptr = TestPkt.GenPacket();
-							ComSocket.SendData(ptr, TestPkt.GetLength());
-							ofs << "Raw packet data to transmit: " << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-							ofs << "Transmitting Packet..." << std::endl;
+							transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 							break;
 						case 2:
 							myAction.Action = DOWN;
@@ -238,9 +237,7 @@ void StartCSI(std::string ip, int port) {
 							TestPkt.SetPktCount(++pktCount);
 							TestPkt.CalcCRC();
 							ptr = TestPkt.GenPacket();
-							ComSocket.SendData(ptr, TestPkt.GetLength());
-							ofs << "Raw packet data to transmit: " << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-							ofs << "Transmitting Packet..." << std::endl;
+							transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 							break;
 						default:
 							std::cout << "Bad input - please select a motion from the following options (input 1 or 2): " << std::endl;
@@ -255,9 +252,7 @@ void StartCSI(std::string ip, int port) {
 					TestPkt.SetPktCount(++pktCount);
 					TestPkt.CalcCRC();
 					ptr = TestPkt.GenPacket();
-					ComSocket.SendData(ptr, TestPkt.GetLength());
-					ofs << "Raw packet data to transmit: " << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet..." << std::endl;
+					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 					loop = false;
 					break;
 				case 5:
@@ -268,9 +263,7 @@ void StartCSI(std::string ip, int port) {
 					TestPkt.CalcCRC();
 					ptr = TestPkt.GenPacket();
 					ptr[TestPkt.GetLength() - 1] = 0xf;
-					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet with incorrect CRC..." << std::endl;
-					ComSocket.SendData(ptr, TestPkt.GetLength());
+					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 					break;
 				case 6:
 					TestPkt.SetCmd(ARM);
@@ -280,9 +273,7 @@ void StartCSI(std::string ip, int port) {
 					TestPkt.CalcCRC();
 					ptr = TestPkt.GenPacket();
 					ptr[5] = 0xf;
-					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet with incorrect length..." << std::endl;
-					ComSocket.SendData(ptr, TestPkt.GetLength());
+					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 					break;
 				case 7:
 					TestPkt.SetCmd(ARM);
@@ -292,9 +283,7 @@ void StartCSI(std::string ip, int port) {
 					TestPkt.CalcCRC();
 					ptr = TestPkt.GenPacket();
 					ptr[4] = 0x3;
-					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet with incorrect command..." << std::endl;
-					ComSocket.SendData(ptr, TestPkt.GetLength());
+					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 					break;
 				default:
 					std::cout << "Bad input - please select a command from the following options (input 1, 2, 3 or 4)" << std::endl;
