@@ -178,10 +178,6 @@ void StartCSI(std::string ip, int port) {
 					} while (cmdSelection == -1);
 
 					TestPkt.SetBodyData((char*)&DriveCmd, 2);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 					break;
 				case 2:
 					TestPkt.SetCmd(CLAW);
@@ -194,25 +190,17 @@ void StartCSI(std::string ip, int port) {
 						switch (cmdSelection) {
 						case 1:
 							myAction.Action = OPEN;
-							TestPkt.SetBodyData((char *)&myAction, 1);
-							TestPkt.SetPktCount(++pktCount);
-							TestPkt.CalcCRC();
-							ptr = TestPkt.GenPacket();
-							transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 							break;
 						case 2:
 							myAction.Action = CLOSE;
-							TestPkt.SetBodyData((char *)&myAction, 1);
-							TestPkt.SetPktCount(++pktCount);
-							TestPkt.CalcCRC();
-							ptr = TestPkt.GenPacket();
-							transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 							break;
 						default:
 							std::cout << "Bad input - please select a motion from the following options (input 1 or 2): " << std::endl;
 							cmdSelection = -1;
 						}
 					} while (cmdSelection == -1);
+
+					TestPkt.SetBodyData((char *)&myAction, 1);
 					break;
 				case 3:
 					TestPkt.SetCmd(ARM);
@@ -225,71 +213,57 @@ void StartCSI(std::string ip, int port) {
 						switch (cmdSelection) {
 						case 1:
 							myAction.Action = UP;
-							TestPkt.SetBodyData((char *)&myAction, 1);
-							TestPkt.SetPktCount(++pktCount);
-							TestPkt.CalcCRC();
-							ptr = TestPkt.GenPacket();
-							transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 							break;
 						case 2:
 							myAction.Action = DOWN;
-							TestPkt.SetBodyData((char *)&myAction, 1);
-							TestPkt.SetPktCount(++pktCount);
-							TestPkt.CalcCRC();
-							ptr = TestPkt.GenPacket();
-							transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 							break;
 						default:
 							std::cout << "Bad input - please select a motion from the following options (input 1 or 2): " << std::endl;
 							cmdSelection = -1;
 						}
 					} while (cmdSelection == -1);
+
+					TestPkt.SetBodyData((char *)&myAction, 1);
 					break;
 				case 4:
 					TestPkt.SetCmd(SLEEP);
 					ptr = nullptr;
 					TestPkt.SetBodyData(ptr, 0);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 					loop = false;
 					break;
 				case 5:
-					TestPkt.SetCmd(ARM);
-					myAction.Action = UP;
-					TestPkt.SetBodyData((char *)&myAction, 1);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					ptr[TestPkt.GetLength() - 1] = 0xf;
-					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
-					break;
 				case 6:
-					TestPkt.SetCmd(ARM);
-					myAction.Action = UP;
-					TestPkt.SetBodyData((char *)&myAction, 1);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					ptr[5] = 0xf;
-					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
-					break;
 				case 7:
 					TestPkt.SetCmd(ARM);
 					myAction.Action = UP;
 					TestPkt.SetBodyData((char *)&myAction, 1);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					ptr[4] = 0x3;
-					transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 					break;
 				default:
 					std::cout << "Bad input - please select a command from the following options (input 1, 2, 3 or 4)" << std::endl;
 					cmdSelection = -1;
 				}
 			} while (cmdSelection == -1);
+
+			TestPkt.SetPktCount(++pktCount);
+			TestPkt.CalcCRC();
+			ptr = TestPkt.GenPacket();
+
+			// inject errors
+			switch (cmdSelection) {
+			case 5:
+				ptr[TestPkt.GetLength() - 1] = 0xf;
+				break;
+			case 6:
+				ptr[5] = 0xf;
+				break;
+			case 7:
+				ptr[4] = 0x3;
+				break;
+			default:
+				break;
+			}
+
+			transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
 
 			bytesReceived = ComSocket.GetData(rxBuffer);
 			PktDef RxPkt(rxBuffer);
