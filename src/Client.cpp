@@ -119,6 +119,10 @@ void StartCSI(std::string ip, int port) {
 				std::cout << "2. CLAW" << std::endl;
 				std::cout << "3. ARM" << std::endl;
 				std::cout << "4. SLEEP" << std::endl;
+				std::cout << std::endl;
+				std::cout << "5. INJECT INCORRECT CRC" << std::endl;
+				std::cout << "6. INJECT INCORRECT HEADER LENGTH" << std::endl;
+				std::cout << "7. INJECT INCORRECT COMMAND" << std::endl;
 
 				std::cin >> cmdSelection;
 
@@ -261,6 +265,42 @@ void StartCSI(std::string ip, int port) {
 					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
 					ofs << "Transmitting Packet..." << std::endl;
 					loop = false;
+					break;
+				case 5:
+					TestPkt.SetCmd(ARM);
+					myAction.Action = UP;
+					TestPkt.SetBodyData((char *)&myAction, 1);
+					TestPkt.SetPktCount(++pktCount);
+					TestPkt.CalcCRC();
+					ptr = TestPkt.GenPacket();
+					ptr[TestPkt.GetLength() - 1] = 0xf;
+					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+					ofs << "Transmitting Packet with incorrect CRC..." << std::endl;
+					ComSocket.SendData(ptr, TestPkt.GetLength());
+					break;
+				case 6:
+					TestPkt.SetCmd(ARM);
+					myAction.Action = UP;
+					TestPkt.SetBodyData((char *)&myAction, 1);
+					TestPkt.SetPktCount(++pktCount);
+					TestPkt.CalcCRC();
+					ptr = TestPkt.GenPacket();
+					ptr[5] = 0xf;
+					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+					ofs << "Transmitting Packet with incorrect length..." << std::endl;
+					ComSocket.SendData(ptr, TestPkt.GetLength());
+					break;
+				case 7:
+					TestPkt.SetCmd(ARM);
+					myAction.Action = UP;
+					TestPkt.SetBodyData((char *)&myAction, 1);
+					TestPkt.SetPktCount(++pktCount);
+					TestPkt.CalcCRC();
+					ptr = TestPkt.GenPacket();
+					ptr[4] = 0x3;
+					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
+					ofs << "Transmitting Packet with incorrect command..." << std::endl;
+					ComSocket.SendData(ptr, TestPkt.GetLength());
 					break;
 				default:
 					std::cout << "Bad input - please select a command from the following options (input 1, 2, 3 or 4)" << std::endl;
