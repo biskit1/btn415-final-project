@@ -1,9 +1,9 @@
-
-#include <thread>
+#include <fstream>
 #include <iostream>
-#include <fstream> 
-#include <string>
 #include <sstream>
+#include <string>
+#include <thread>
+
 #include "MySocket.h"
 #include "PktDef.h"
 #include "Telemetry.h"
@@ -11,7 +11,10 @@
 #define TELPKTSIZE 12
 
 bool ExeComplete;
+
 std::string makeHex(char * pkt, int size);
+int getDuration();
+void transmitPacket(std::ofstream& ofs, MySocket& sock, char* pkt, int length);
 void telemetryThread(std::string Ip, int TelPort);
 void StartCSI(std::string ip, int port);
 
@@ -44,28 +47,55 @@ int main(int argc, char *argv[])
 }
 
 std::string makeHex(char * pkt, int size) {
-	std::string hexString;
 	std::stringstream stream;
+
 	for (int i = 0; i < size; i++) {
 		stream << std::hex << (int)pkt[i];
+
 		if (i != size - 1) {
 			stream << ", ";
 		}
 	}
-	hexString = stream.str();
-	return hexString;
+
+	return stream.str();
+}
+
+int getDuration() {
+	int duration;
+
+	std::cout << "Input number of seconds to run command for: " << std::endl;
+	std::cin >> duration;
+
+	while (duration <= 0) {
+		std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
+		std::cin >> duration;
+	}
+
+	return duration;
+}
+
+void transmitPacket(std::ofstream& ofs, MySocket& sock, char* pkt, int length) {
+	sock.SendData(pkt, length);
+
+	ofs << "Raw packet data to transmit: " << makeHex(pkt, length) << std::endl;
+	ofs << "Transmitting Packet..." << std::endl;
 }
 
 void telemetryThread(std::string Ip, int TelPort) {
 	std::ofstream ofs("Telemetry.txt", std::ofstream::out);
+
 	MySocket socket(SocketType::CLIENT, Ip, TelPort, ConnectionType::TCP, TELPKTSIZE);
+
 	if (socket.ConnectTCP()) {
 		char rx_buffer[255];
 		int size;
+
 		while (!ExeComplete) {
 			size = socket.GetData(rx_buffer);
+
 			if (size > 0) {
 				PktDef TelPkt(rx_buffer);
+
 				if (size != TelPkt.GetLength()) {
 					std::cout << "ERROR: Packet recieved is not of the expected size!" << std::endl;
 				}
@@ -86,17 +116,19 @@ void telemetryThread(std::string Ip, int TelPort) {
 			}
 		}
 	}
+
 	ofs.close();
 }
 
 void StartCSI(std::string ip, int port) {
 	std::ofstream ofs("Client_Output.txt");
+
 	if (!ofs.is_open())
 		std::cout << "ERROR:  Failed to open Client_Output.txt file" << std::endl;
-	MySocket ComSocket(SocketType::CLIENT, ip, port, ConnectionType::TCP, 100);
-	// if 3 way handshake was successfull 
-	if (ComSocket.ConnectTCP()) {
 
+	MySocket ComSocket(SocketType::CLIENT, ip, port, ConnectionType::TCP, 100);
+
+	if (ComSocket.ConnectTCP()) {
 		int cmdSelection = -1;
 		int pktCount = 0;
 
@@ -130,202 +162,129 @@ void StartCSI(std::string ip, int port) {
 				case 1:
 					TestPkt.SetCmd(DRIVE);
 					std::cout << "Select a direction to drive: " << std::endl;
+
 					do {
 						std::cout << "1. Forward\n2. Backward\n3. Right\n4. Left" << std::endl;
 						std::cin >> cmdSelection;
-						switch (cmdSelection) {
-							//set motorbody
-						case 1:
+
+						if (cmdSelection > 0 || cmdSelection < 5) {
 							DriveCmd.Direction = cmdSelection;
-							std::cout << "Input number of seconds to run command for: " << std::endl;
-							std::cin >> cmdSelection;
-							while (cmdSelection <= 0) {
-								std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
-								std::cin >> cmdSelection;
-							}
-							DriveCmd.Duration = cmdSelection;
-							break;
-						case 2:
-							DriveCmd.Direction = cmdSelection;
-							std::cout << "Input number of seconds to run command for: " << std::endl;
-							std::cin >> cmdSelection;
-							while (cmdSelection <= 0) {
-								std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
-								std::cin >> cmdSelection;
-							}
-							DriveCmd.Duration = cmdSelection;
-							break;
-						case 3:
-							DriveCmd.Direction = cmdSelection;
-							std::cout << "Input number of seconds to run command for: " << std::endl;
-							std::cin >> cmdSelection;
-							while (cmdSelection <= 0) {
-								std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
-								std::cin >> cmdSelection;
-							}
-							DriveCmd.Duration = cmdSelection;
-							break;
-						case 4:
-							DriveCmd.Direction = cmdSelection;
-							std::cout << "Input number of seconds to run command for: " << std::endl;
-							std::cin >> cmdSelection;
-							while (cmdSelection <= 0) {
-								std::cout << "Bad input - please input number of seconds to run command for (input > 0): " << std::endl;
-								std::cin >> cmdSelection;
-							}
-							DriveCmd.Duration = cmdSelection;
-							break;
-						default:
+							DriveCmd.Duration = getDuration();
+						}
+						else {
 							std::cout << "Bad input - please select a direction from the following options (input 1, 2, 3 or 4): " << std::endl;
 							cmdSelection = -1;
 						}
 					} while (cmdSelection == -1);
+
 					TestPkt.SetBodyData((char*)&DriveCmd, 2);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					ComSocket.SendData(ptr, TestPkt.GetLength());
-					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet..." << std::endl;
 					break;
 				case 2:
 					TestPkt.SetCmd(CLAW);
 					std::cout << "Select a motion: " << std::endl;
+
 					do {
 						std::cout << "1. Open\n2. Close" << std::endl;
 						std::cin >> cmdSelection;
+
 						switch (cmdSelection) {
 						case 1:
 							myAction.Action = OPEN;
-							TestPkt.SetBodyData((char *)&myAction, 1);
-							TestPkt.SetPktCount(++pktCount);
-							TestPkt.CalcCRC();
-							ptr = TestPkt.GenPacket();
-							ComSocket.SendData(ptr, TestPkt.GetLength());
-							ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-							ofs << "Transmitting Packet..." << std::endl;
 							break;
 						case 2:
 							myAction.Action = CLOSE;
-							TestPkt.SetBodyData((char *)&myAction, 1);
-							TestPkt.SetPktCount(++pktCount);
-							TestPkt.CalcCRC();
-							ptr = TestPkt.GenPacket();
-							ComSocket.SendData(ptr, TestPkt.GetLength());
-							ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-							ofs << "Transmitting Packet..." << std::endl;
 							break;
 						default:
 							std::cout << "Bad input - please select a motion from the following options (input 1 or 2): " << std::endl;
 							cmdSelection = -1;
 						}
 					} while (cmdSelection == -1);
+
+					TestPkt.SetBodyData((char *)&myAction, 1);
 					break;
 				case 3:
 					TestPkt.SetCmd(ARM);
 					std::cout << "Select a motion: " << std::endl;
+
 					do {
 						std::cout << "1. Up\n2. Down" << std::endl;
 						std::cin >> cmdSelection;
+
 						switch (cmdSelection) {
 						case 1:
 							myAction.Action = UP;
-							TestPkt.SetBodyData((char *)&myAction, 1);
-							TestPkt.SetPktCount(++pktCount);
-							TestPkt.CalcCRC();
-							ptr = TestPkt.GenPacket();
-							ComSocket.SendData(ptr, TestPkt.GetLength());
-							ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-							ofs << "Transmitting Packet..." << std::endl;
 							break;
 						case 2:
 							myAction.Action = DOWN;
-							TestPkt.SetBodyData((char *)&myAction, 1);
-							TestPkt.SetPktCount(++pktCount);
-							TestPkt.CalcCRC();
-							ptr = TestPkt.GenPacket();
-							ComSocket.SendData(ptr, TestPkt.GetLength());
-							ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-							ofs << "Transmitting Packet..." << std::endl;
 							break;
 						default:
 							std::cout << "Bad input - please select a motion from the following options (input 1 or 2): " << std::endl;
 							cmdSelection = -1;
 						}
 					} while (cmdSelection == -1);
+
+					TestPkt.SetBodyData((char *)&myAction, 1);
 					break;
 				case 4:
 					TestPkt.SetCmd(SLEEP);
 					ptr = nullptr;
 					TestPkt.SetBodyData(ptr, 0);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					ComSocket.SendData(ptr, TestPkt.GetLength());
-					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet..." << std::endl;
 					loop = false;
 					break;
 				case 5:
-					TestPkt.SetCmd(ARM);
-					myAction.Action = UP;
-					TestPkt.SetBodyData((char *)&myAction, 1);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					ptr[TestPkt.GetLength() - 1] = 0xf;
-					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet with incorrect CRC..." << std::endl;
-					ComSocket.SendData(ptr, TestPkt.GetLength());
-					break;
 				case 6:
-					TestPkt.SetCmd(ARM);
-					myAction.Action = UP;
-					TestPkt.SetBodyData((char *)&myAction, 1);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					ptr[5] = 0xf;
-					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet with incorrect length..." << std::endl;
-					ComSocket.SendData(ptr, TestPkt.GetLength());
-					break;
 				case 7:
 					TestPkt.SetCmd(ARM);
 					myAction.Action = UP;
 					TestPkt.SetBodyData((char *)&myAction, 1);
-					TestPkt.SetPktCount(++pktCount);
-					TestPkt.CalcCRC();
-					ptr = TestPkt.GenPacket();
-					ptr[4] = 0x3;
-					ofs << "Raw packet data to transmit: " << std::endl << makeHex(ptr, TestPkt.GetLength()) << std::endl;
-					ofs << "Transmitting Packet with incorrect command..." << std::endl;
-					ComSocket.SendData(ptr, TestPkt.GetLength());
 					break;
 				default:
 					std::cout << "Bad input - please select a command from the following options (input 1, 2, 3 or 4)" << std::endl;
 					cmdSelection = -1;
 				}
 			} while (cmdSelection == -1);
+
+			TestPkt.SetPktCount(++pktCount);
+			TestPkt.CalcCRC();
+			ptr = TestPkt.GenPacket();
+
+			// inject errors
+			switch (cmdSelection) {
+			case 5:
+				ptr[TestPkt.GetLength() - 1] = 0xf;
+				break;
+			case 6:
+				ptr[5] = 0xf;
+				break;
+			case 7:
+				ptr[4] = 0x3;
+				break;
+			default:
+				break;
+			}
+
+			transmitPacket(ofs, ComSocket, ptr, TestPkt.GetLength());
+
 			bytesReceived = ComSocket.GetData(rxBuffer);
 			PktDef RxPkt(rxBuffer);
+
 			if (RxPkt.CheckCRC(rxBuffer, bytesReceived)) {
 				if (RxPkt.GetAck() && RxPkt.GetCmd() != UNKNOWN && RxPkt.GetCmd() != STATUS) {
 					std::cout << "Ackknowledgement Received- Packet delivered successfully" << std::endl;
 					ofs << "Ackknowledgement Received- Packet delivered successfully" << std::endl;
-					ofs << "Raw packet data: " << std::endl;
-					ofs << makeHex(rxBuffer, RxPkt.GetLength()) << std::endl;
+					ofs << "Raw packet data: " << makeHex(rxBuffer, RxPkt.GetLength()) << std::endl;
 					pktCount = RxPkt.GetPktCount();
 				}
 				else {
 					std::cout << "Packet delivery was unsuccessful" << std::endl;
 					ofs << "Packet delivery was unsuccessful" << std::endl;
-					ofs << "Raw packet data: " << std::endl;
-					ofs << makeHex(rxBuffer, RxPkt.GetLength()) << std::endl;
+					ofs << "Raw packet data: " << makeHex(rxBuffer, RxPkt.GetLength()) << std::endl;
+
 					if (RxPkt.GetCmd() == UNKNOWN && RxPkt.GetAck() == 0) {
 						std::cout << "Data received in body: " << RxPkt.GetBodyData() << std::endl;
 						ofs << "Data received in body: " << RxPkt.GetBodyData() << std::endl;
 					}
+
 					loop = true;
 				}
 			}

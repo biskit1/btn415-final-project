@@ -357,4 +357,6 @@ ASALocalRun/
 *.exe
 *.out
 *.app
+
 src/Telemetry.txt
+src/Client_Output.txt
